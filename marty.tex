@@ -1,0 +1,339 @@
+\documentclass[a4paper,12pt,twoside,BCOR=10mm]{scrbook}
+
+% Packages
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage[icelandic, english]{babel}
+\usepackage{t1enc}
+\usepackage{graphicx}
+\usepackage[intoc]{nomencl}
+\usepackage{enumerate,color}
+\usepackage{url}
+\usepackage[pdfborder={0 0 0}]{hyperref}
+\usepackage{appendix}
+\usepackage{eso-pic}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[nottoc]{tocbibind}
+\usepackage[sort&compress,authoryear]{natbib}
+\usepackage[sf,normalsize]{subfigure}
+\usepackage[format=plain,labelformat=simple,labelsep=colon]{caption}
+\usepackage{placeins}
+\usepackage{tabularx}
+% Configurations
+\graphicspath{{figs/}{../figs/}}
+
+\setlength{\parskip}{\baselineskip}
+\setlength{\parindent}{0cm}
+\raggedbottom
+% \setkomafont{subsection}{\normalfont\sffamily}
+
+% Eins og templatið á að vera
+% \setkomafont{captionlabel}{\itshape}
+% \setkomafont{caption}{\itshape}
+
+% Mun fallegri lausn
+\setkomafont{captionlabel}{\itshape}
+\setkomafont{caption}{\itshape}
+\setkomafont{section}{\FloatBarrier\Large}
+\setcapwidth[l]{\textwidth}
+\setcapindent{1em}
+
+
+% Times new roman
+%\usepackage[T1]{fontenc}
+%\usepackage{mathptmx}
+
+%%%%%%%%%%% MODIFY THESE LINES ONLY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\thesisyear{2013}       						% Year thesis submitted
+\def\thesismonth{October}						% Month thesis submitted
+\def\thesisauthor{Baldur Þór Emilsson}					% Thesis authoreiningaraðferðinni
+\def\thesistitle{Marty: Application Development and Testing with Production Data in PostgreSQL} % Title of thesis
+\def\thesisshorttitle{Development and Testing with Production Data} 	% Title of thesis
+\def\thesiscredits{60} 							% Credits awarded for the project
+\def\thesissubject{Computer Science}
+\def\thesiskind{M.Sc.}							% Masters of PhD thesis
+\def\thesiskindformal{Magister Scientiarum}				% Masters of PhD thesis
+\def\thesisnroftutors{1}						% Number of tutors
+\def\thesisschool{School of Engineering and {Natural Sciences}}		% School
+\def\thesisfaculty{Industrial Engineering,\\Mechanical Engineering and\\Computer Science} % Faculty
+\def\thesisaddress{Hjarðarhaga 2-6}					% Office address
+\def\thesispostalcode{107, Reykjavik}					% Office address
+\def\thesistelephone{525 4700}						% Office telephone
+\def\thesistutors{Hjálmtýr Hafsteinsson}
+\def\thesisrepresentative{XXNN3}					% Tutors name
+\def\thesisPrinting{Háskólaprent, Fálkagata 2, 107 Reykjavík}
+
+% Function to add footer to frontpage
+\newcommand\BackgroundPic{
+\put(0,0){
+\parbox[b][\paperheight]{\paperwidth}{
+\vfill
+\centering
+\hspace*{-0.6cm}
+\includegraphics[width=\paperwidth,height=\paperheight,
+keepaspectratio]{foot}
+}}
+\setlength{\unitlength}{\paperwidth}
+\begin{picture}(0,0)(0,-0.15)
+\put(0,0){\color{white}\parbox{1\paperwidth}{\centering\bfseries\sffamily \Large Faculty of \thesisfaculty \\
+University of Iceland\\
+\thesisyear}}
+\end{picture}
+}
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\AddToShipoutPicture*{\BackgroundPic}
+%
+\begin{center}
+\vspace*{1cm}
+\includegraphics[width=43.6mm]{ui_1_cmyk}\\
+\vspace*{3.0cm}
+\huge \sffamily \bfseries \thesistitle
+
+\vspace*{5.5cm}
+\normalfont \Large \sffamily \thesisauthor
+\AddToShipoutPicture*{\BackgroundPic}
+\vfill
+
+\end{center}
+
+\newpage 
+\thispagestyle{empty} \mbox{}
+\newpage
+\vspace*{1.35cm}
+\thispagestyle{empty}
+\begin{center}
+
+\Large \textbf{\sffamily{\MakeUppercase{\thesistitle}}} \\
+
+\vspace*{1.7cm}
+\sffamily{\thesisauthor} \\
+\vspace*{1.8cm}
+\normalsize \thesiscredits~ECTS thesis submitted in partial fulfillment of a \\
+\textit{\thesiskindformal} degree in \thesissubject
+
+\vspace*{1.0cm}
+\large
+\ifnum\thesisnroftutors >1 Advisors \\ \thesistutors \\ \vspace*{0.4cm}
+\else Advisor \\ \thesistutors \\ \vspace*{1.04cm}
+\fi
+Faculty Representative \\
+\thesisrepresentative
+
+\vfill
+Faculty of \thesisfaculty \\
+\thesisschool \\
+University of Iceland \\
+Reykjavik, \thesismonth~\thesisyear
+\newpage
+\end{center}
+ \newpage
+ \thispagestyle{empty}
+ \mbox{} \vfill
+ % \setcounter{page}{0} \renewcommand{\baselinestretch}{1.5}\normalsize
+ \sffamily{\thesistitle} \\
+ \sffamily{\thesisshorttitle} \\
+ \thesiscredits ~ECTS thesis submitted in partial fulfillment of a \thesiskind~degree in \thesissubject
+\\ \\
+Copyright \textcopyright~\thesisyear~ \thesisauthor \\
+All rights reserved \\
+
+
+Faculty of \thesisfaculty \\
+\thesisschool \\
+University of Iceland \\
+\thesisaddress \\
+\thesispostalcode, Reykjavik \\
+Iceland
+
+Telephone: \thesistelephone \\ \\
+\vspace*{\lineskip}
+
+Bibliographic information: \\
+\thesisauthor, \thesisyear, \thesistitle, \thesiskind~thesis, Faculty of \thesisfaculty, University of Iceland. \\
+
+Printing: \thesisPrinting \\
+Reykjavik, Iceland, \thesismonth~\thesisyear \\
+\newpage
+\end{titlepage}
+
+
+\pagenumbering{roman}
+
+\setcounter{page}{3}
+\section*{\huge Abstract}
+Marty is a proof-of-concept prototype for a framework that offers convenient application development and testing against data used in production that is stored in the PostgreSQL database management system. It is designed for minimal overhead and configuration on production servers while offering quick and simple database initialization on development and testing servers. This opens the possibility for application testing on production data with minimal effort, which complements conventional testing datasets and helps preventing bugs from entering production code which were not caught with the conventional datasets.
+\vfill \vspace*{1cm}
+\section*{\huge Útdráttur}
+Marty er hugbúnaðarlausn sem býður upp á þægilegt þróunar- og prófunarumhverfi fyrir forrit sem nota PostgreSQL gagnagrunnskerfið. Hún er hönnuð til að nota gögn úr gagnagrunnum sem keyra í raunumhverfi án þess að hafa neikvæð áhrif á afköst netþjónanna sem grunnarnir keyra á og án mikilla breytinga á uppsetningu þeirra en bjóða á sama tíma upp á fljótlega og einfalda uppsetningu þróunar- og prófunargagnagrunna. Það opnar fyrir möguleikann á hugbúnaðaprófunum með raungögnum án mikillar fyrirhafnar sem geta keyrt samhliða prófunum með hefðbundin prófunargagnasett og hjálpað við að uppræta villur sem koma ekki í ljós með hefðbundnum prófunum.
+\vfill
+\newpage
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter*{Abbreviations}
+\addcontentsline{toc}{chapter}{Abbreviations}
+Í þessum kafla mega koma fram listar yfir skammstafanir og/eða breytuheiti. Gefið kaflanum nafn við hæfi, t.d. Skammstafanir eða Breytuheiti. Þessum kafla má sleppa ef hans er ekki þörf. \\
+
+The section could be titled: Glossary, Variable Names, etc.
+
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+Í þessum kafla koma fram þakkir til þeirra sem hafa styrkt rannsóknina með fjárframlögum, aðstöðu eða vinnu. T.d. styrktarsjóðir, fyrirtæki, leiðbeinendur, og aðrir aðilar sem hafa á einhvern hátt aðstoðað við gerð verkefnisins, þ.m.t. vinir og fjölskylda ef við á. Þakkir byrja á oddatölusíðu (hægri síðu).
+
+
+\chapter{Introduction}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+Database management systems (DBMS) are used as datastores in many different systems in various fields. They are rarely used as standalone products and are usually used to store data from other applications. These applications are often in constant development with short development cycles, which include both manual and automated testing. Both the development in general and testing in particular rely on the availability of appropriate data in the DBMS. That data might be \textit{mock data}, generated by the developers, or \textit{live data}, copied from the database servers used in production. Both methods have pros and cons, generating datasets can be time consuming for developers while inserting them into the DBMS can be a quick process and thus ideal for automated testing that runs periodically. Copying data from a live system can take considerable time and delay testing and development. It adds overhead to the DBMS on production servers, which might have a negative effect on performance. The live data 
+might, however, provide the developers with more realistic, and thus more appropriate, dataset to work with as certain functions of the application in development might behave unexpectedly when run on larger datasets than the mock data contains and developers might likewise overestimate the size of other parts of the dataset and start optimizing the application prematurely. Another cause for concern are unexpected values of records in the DBMS, e.g. people names or usernames might include characters that need special encoding handling and dates might be outside of a valid range (e.g. future dates where only past events should be stored).
+
+The goal of Marty is to offer a convenient and relatively efficient way to run tests for applications that use the PostgreSQL (Postgres) DBMS against the live data on the production servers without adding overhead to them. This is achieved by using a feature of Postgres that is called \textit{continuous archiving} to keep track of the changes made to the database without adding new functionality to the production servers, like triggers or extra logging modules. The changes are recorded to another instance of Postgres which provides the development and testing servers with information about the schema of the database and also the data stored in it.
+
+% TODO stutt lýsing á restinni af ritgerðinni
+
+\chapter{Postgres}
+This chapter provides a short history of PostgreSQL along with an overview of the features and internal design that Marty builds on.
+
+\section{History}
+Postgres is an SQL based DBMS that originated at the University of California, Berkely in the 1980's. It was based on another DBMS, Ingres, and was released as a free and open source software in 1995. It is developed by a global community under the name PostgreSQL Global Development Group, with a core team consisting of a half a dozen members and a large number of other contributors. It is written in C and runs on multiple platforms.
+
+Postgres is very mature and has a large number of features, including conformance with a large part of the SQL standard and a support for extension modules. Many modules have been created to add new data types, offer new scripting languages for stored procedures and add functionality for specific types of data, such as geographical information. It has a very extensive documentation and an active community that offers support for users through mailing lists and IRC channels.
+
+Many companies offer commercial support and products based on Postgres with many more using it as a part of their internal systems. It is used by government organizations and universities and many free and open source projects.
+
+\section{Data storage}
+Postgres stores all data in a \textit{cluster}. The cluster is a directory in the file system and contains many different files and subdirectories. Each cluster can have many databases for logical separation of data. The data is stored in relations in the database which can be of a few different kinds, see table 1. Each database has a subdirectory in the filesystem and each relation is stored in a separate file inside that subdirectory.
+
+% TODO add table 1 and change reference to it
+
+The relation files contain \textit{pages}, which are usually 8 kB, and the data is stored inside those pages in \textit{tuples}. Regular tables store each row in a spearate tuple.
+
+% TODO mynd sem lýsir hverni töflur eru geymdar í skrá?
+
+The tables have a few \textit{system columns} that Postgres uses for internal references, see table 2. One of those columns is \textit{ctid} which is a virtual column whose value is not actually stored in disk but is derived from the location of the page and tuple where the row is stored. The page number is zero-based while the tuple number is one-based, so the first row in a table has the ctid value if \textit{(0,1)}. This value is used by Marty to reference individual rows.
+
+% TODO add table 2 and change reference
+
+\section{Transactions}
+Postgres supports multiple concurrent connections to the same database, which can read and write to the same relations at the same time. To avoid inconsistency, such as one user reading partially written data by another user, Postgres uses the well known technique of wrapping queries that alter the state of the cluster in a transaction. Each transaction acquires locks for its operations, e.g. read and write locks for relations, before it can be executed. To boost performance Postgres uses a technique called multiversion concurrency control (MVCC) which enables different transactions to read and write to the same relation at the same time without causing inconsistency.
+
+Each transaction has a unique ID (xid) and when a row is inserted into a table the current xid is recorded in the \textit{xmin} system field, see table 2. When the row is deleted its contents are not immediately removed from the database but the current xid is stored in another system field, \textit{xmax}. An update is a combination of those two operations, the row with the old value is marked as deleted and another row is inserted with the new value. When the table is then queried Postgres uses the current xid (if the query is part of a transaction), or the latest xid, as a reference to filter which rows are visible. Only rows whose \textit{xmin} is equal to or less than the reference xid and whose \textit{xmax} is greater (or zero, for rows that have not been deleted) are returned.
+
+% TODO fix reference to table 2
+% TODO Mynd: útskýring á transactions og xmin og xmax
+
+The xids are 32 bit integers that wrap and are reused. Before Postgres reuses old xids it runs an operation called \textit{vacuum} where old xids are replaced with a value that is always lower than the current xid. If the xmax field contains an xid that can be replaced with this value the row can no longer be read by any tranaction and is thus removed permanently.
+
+% TODO explain vacuum better?
+
+\section{Write Ahead Log}
+An important concern of Postgres is the correctness and consistency of data inserted into the system. No hardware can offer 100\% reliability and Postgres is designed with that in mind. Every operation that in some way alters the state of the database in Postgres is logged in a so called \textit{write ahead log}, or WAL. This is a common feature of many database systems and its name is descriptive of the fact that all changes must first be written to this log before the operation can be considered complete. That means that a transaction must both make changes to the relation files in the cluster and log those changes to the WAL before finishing successfully.
+
+The reason for this redundancy, which appears to add unnecessary overhead to all transactions, becomes clear when the underlying storage hardware is investigated. All storage hardware, whether it is a rotating magnetic disk or a solid state flash memory, has a mich higher performance when reading or writing sequential data than when the data is scattered throughout the storage. This performance difference is usually many orders of magnitudes and a program that runs in a reasonable time when working with sequential data might become unusable if the data was scattered. This has a direct effect on the design of Postgres beause transactions do often make changes to many different relations in a database, thos relations are stored in different files in different places on the hard drive and writing to all those files can take considerable time. To prevent transactions from stalling while this data is written to the disk the updated data is instead cached in the memory and is flushed to the disk at a later time. 
+This dramatically improves the performance of Postgres and enables it to handle a very high number of queries that are necessary or many large applications. However it also introduces the risk of loss of data that was supposed to be safely stored in the database. In case of a system crash, because of a power outage or a hardware failure, the relation data that has not been flushed to the disk whould be lost if no actions were taken to ensure data safety. The strategy that was chosen in the Postgres design is therefore to keep a log of all changes that are made to the databases. This log is always flushed to the disk before a transaction is finished and in the case of data loss due to system failure the changes in the log are replayed into the database The performance hit of writing the WAL to the disk is less than writing the relation data to the disk by many orders of magnitude. This is due to the append-only natre of the log which means that it is written sequentially to the disk and makes it an acceptable 
+solution to ensure data safety while keeping performance high.
+
+% TODO IS THIS REALLY NECESSARY? :s
+% TODO add reference and picture: http://queue.acm.org/detail.cfm?id=1563874
+
+Each time that Postgres is started it enters recovery mode where it reads the WAL and applies all changes that were not successfully written to the cluster. This operation is realtively fast as the WAL contains the same raw binary data that is in the cluster files and Postgres can copy that data directy into them. This means that individual SQL queries can not be looked up directly in the WAL and to be able to understand its contents one must have access to the database cluster that it is used to log.
+
+The WAL is not stored in one big file but is broken into smaller files, usually 16MB each. This simplifies many operations that Postgres executes when working with the WAL, such as recycling and archiving. When all contents of a WAL file have been written to the relation files in the cluster and those files have been flushed to the disk the WAL file is no longer necessary. Postgres either deletes that file or recycles it; the filename is changed to represent the latest WAL file and new WAL records from the latest transaction are written into that file, overwriting the old contents of the file.
+
+Postgres can be configured to automatically archive the WAL files when it stops writing to them and switches to the next file. Before Postgres is started the database administrator can configure it to execute a shell command to copy the WAL file to be archived. The command can be of any length and can run any programs that are installed on the server, so the archiving strategy can be tailored to fit the needs of each project. It could archive the files to another hard drive on the same server, to another server on the same network or into the cloud.
+
+The WAL files are not of much use by themselves. In the case of a catastrophic failure where the data in the Postgres server is corrupted or lost it is not enough to have a copy of the WAL files to restore the database. For that to be possible it is necessary to keep a backup of the cluster files. Another instance of Postgres can then use that backup to run the databases as they were at the time that the backup was taken. The archived WAL files can then be used to update the databases in this server and the only data that is lost is the data in the WAL files that had not been archived yet.
+
+% TODO Please simplify, brutally
+
+\section{Standby servers}
+When the data in a Postgres server becomes unavailable as a result of a crash or corruption it is possible to use a backup of the cluster files and archived WAL files to restore the data with minimal data loss. Configuring and starting this backup takes time which results in a downtime of the system or application that uses the databases in Postgres. To minimize this downtime it is possible to start the backup server \textit{before} the primary server fails. This is called a \textit{standby server} and it runs alongside the primary waiting for new WAL files to arrive at the archive location. Those WAL iles are immediately replayed into the server so it is always up to date. When a failure occurs in the Primary server the standby server can immediately be configured to take over and run as the primary server.
+
+The standby server is not only a backup solution. It can be queried with read-only requests, which can help with distributing the load from the primary server and on to backup servers where it is acceptible that the returned data might not be up to date. This feature is used by Marty when it reads the contents of the WAL files, this is described in detail in chapter X.
+
+% TODO update reference to chapter X.
+% TODO Shorten and simplify, explain more in terms of Marty than in terms of Postgres
+
+\chapter{Marty}
+% TODO Þessi kafli inniheldur...
+
+\section{Design considerations}
+The idea behind Marty is that developers should be able to clone a database quickly, ideally in a few seconds. This is simple for small databases that are up to a few megabytes but cloning a larger database that contains hunderds of megabytes or many gigabytes of data can take minutes instead of seconds. This makes cloning a large database unfeasible in many situations where it might be beneficial for the development of applications that use Postgres.
+
+Instead of cloning the whole database before it is used it would be possible to clone a part of it and then fetch the missing data when it is needed. This is what Marty does; it populates a database with empty tables and fetches their contents when they are queried. This reduces cloning time considerably with the drawback of longer query times for the initial queries to the tables in the cloned database, when the tables are queried for the first time they are empty and need to be populated with the data from the master database.
+
+In the time between setting up the empty tables and populating them with data the master database can change. This can lead to missing and inconsistent data in the cloned database, e.g. if a table is dropped on the master its data is not available for the clone. If the table is dropped on the master after it is created on the clone but before it is populated it will stay empty on the clone which might break foreign key constraints in other tables. Therefore Marty needs to be able to fetch the data as it was in the master at the time of cloning. To be able to do that it is necessary to keep a log of the changes and the different states of the master database so that the cloned databses can fetch the data as it was at the time of cloning. To be able to do that it is necessary to keep a log of the changes and the different states of the master database so that the cloned databases can fetch the data as it was at a certain point in time. This is not a standard feature of Postgres so to be able to use this 
+technique of initializing empty tables and populating them later the changes to the master database must be logged in some way to make past states o the database available.
+
+There are a few ways to create such a log, following is a list of a few method that were considered and their pros and cons, ending wht the one that was chosen for Marty.
+
+\subsection{Keep a log in the master database}
+Instead of deleting rows from the tables in the master database they would just be marked as deleted. Similarly when a row is updated the new values would be written to a new row and the old row would be marked as deleted. This is similar to the way that Postres uses MVCC internally.
+
+This method could keep the setup of the cloned databases simple as they would query the master database in the same way as other applications, only with a different \textit{where} clause to limit the results to rows that were created before a specific point in time. However it would complicate the table schema of the master database as well as all queries to it. Old databases would need to be refactored and the cloned databases would add an overhead to the master database when the contents of the tables are fetched, which might degrade the performance of the master server. This would lead to more mistakes being made in database administration and development of applications that use Postgres and would make Marty unappealing or unsuitable for many environments.
+
+\subsection{Use triggers to log changes}
+All changes would be logged to another database by using triggers on the master. This setup can reduce the performance impact that the first solution would bring as the cloned databases would query the other database that keeps the log instead of the master. It would complicate the database administration because a separate database is created for the log and a trigger would need to be created for every table in the master database. This might lead to errors both in the master, which might have a negative effect on performance and stability, and errors in the database that keeps the log and the cloned databases, as missing or wrong triggers would result in inconsistent or missing data. The cost of creating the triggers and the potential for errors and performance issues on the master might hinder many administrators from trying Marty, as the risk would outweigh the potential benefits. For these reasons this approach was not taken.
+
+\subsection{Use the MVCC to make old data available}
+Postgres does aldready store old versions of the data in the database. As described in chapter X Postgres implements MVCC so deleted rows are not removed but only marked as deleted and when rows are updated they are marked as deleted and the new values are recorded in a new row. This is only for internal use and database users do not get any access to or control over the data that Postgres has marked as deleted.
+
+To be able to use this old data it would be necessary to patch Postgres. A patch like that would create an interface for the database users to access the old versions of the data, most likely by adding an SQL command. This approach could simplify database administration as the same database is used by the cloned databases and other applications. However this approach has similar problems as the previous two, namely the cost of setting it up - it would require the master database to be moved to a patched instance of Postgres - as well as security concerns and possible performance as the previous two, namely the cost of setting it up - it would require the master database to be moved to a patched instance of Postgres - as well as security concerns and possible performance issues. A new code brings potential security risks, especially when added to a complex system such as Postgres, and the cloned databases would add performance overhead to the master which might already be in heavy use. Therefore this method 
+was ruled out.
+
+% TODO fix reference to chapter X
+
+\subsection{Read the changes from the WAL}
+All changes to the master server are already logged to the WAL. Postgres can be configured to archive the WAL files automatically to a server where they can be inspected without additional performance overhead on the master server. The only change that is needed on the master server s the configuration for the WAL archiving, if it has not already been configured. Reading the contents of the WAL is more problematic as there is no method for inspecting its contents. Postgres uses internal functions to read and apply the WAL to th cluster that are not accessible for plugins or third party applications so reading the WAL requires an application that reimplements these functions or a modified version of Postgres that logs the changes in a way that is usable for Marty. This application or modified Postgres instance would add administrative overhead but would run separately from the master Postgres instance, possibly on another server, and would in no way interfere with the master server. This could make Marty more 
+appealing for database administrators that are concerned with stability and correctness.
+
+This method was choen because it did not share the stability and security problems that the other methods introducedto the master server. An important concern in the development of Marty was the ability to set it up and use it without making changes to or requiring refactoring of the master database and this method of accessing the changes and old data of the master database is in ine with that goal.
+
+\section{Architecture}
+Marty is designed to create clones of one \textit{master} database. This master could be used in production to store live data or it could be used to store mock data to be used for development and testing. Marty is configured to create \textit{clones} of this database and there can be multiple concurrent clones in use at the same time. These clones represent the master database as it was when the clone was created, if it is necessary to get an updated version that contains more recent data another clone must be created.
+
+When the user creates a clone she runs a script that reads the database schema of the master and creates the tables and other database objects in the clone. The schema is not read directly rom the master but from another database called \textit{history}. The purpose of this database is to keep a record of the contents and shema of the master as it was at any given point in time. It serves two functions; to reduce the load on the master when the clones are created and when they fetch the contents of the tables and also to keep a log of all the changes in the master so that the clones can query the contents of the tables as it was at the time of the creation of the clone. As described in chapter X this is necessary because of the way that the cones are created, empty tables that are populated when they are first queried.
+
+% TODO fix reference to chapter X
+% TODO add figure
+
+To create the history database Marty starts by reading the schema of the master and its data and record it in the history database. This creates the first version of the data in the history database. Subsequent versions are created when Marty reads the WAL from the master. As previously described it is not possible to read the contents of the WAL directly, it is necessary to use the cluster files as a reference. Thus before Marty is started the cluster files of the master are copied and another instance of Postgres is started that uses the copy of the cluster. This instance is updated with the data in the WAL from the master and is called \textit{slave}, like it is referenced in the Postgres documentation. Marty initializes the history by inspecting the contents of the slave and continues to update the history with the data that the slave reads from the WAL from the master. This setup is illustrated in figure X.
+
+% TODO add reference to Postgres doc: http://www.postgresql.org/docs/9.3/static/high-availability.html
+% TODO fix reference to figure X
+
+The goal for the current version of Marty was a working proof-of-concept prototype. It lacks many features that are critical for its use as a part of the development and testing of applications and it only supports the most basic functions of a database; selecting, inserting, updateing and deleting data. The features that are missing are e.g. table constraints (primary and foreign keys), indexes, sequences and more. I was not concerned with copying the roles (users) or their privileges from the master over to the clones so the user(s) on the clones have all availabel privileges for all objects in the database.
+
+\section{History database}
+The history database keeps records about exactly one master database. It keeps records on both the data definitions (schema) of master and the data stored in its relations.
+
+The current version of Marty records information about all schemas in master (that is Postgres schemas that are used for grouping tables) but is only concerned with ordinary table relations, it skips indexes, sequences and all other types of relations that are not ordinary tables. The information that is recorded about the tables is just the minimum that is necessary to reconstruct the contents and schema of tables that use simple standard column types, so no constraints (primary / foreign keys or unique values) or default values nad not arrays or composite types.
+
+All data in history is versioned. When data is inserted the time of insertion is recorded and when data is deleted it is only marked as unavailable after that point in time. This is similar to the way Postgres uses MVCC internally and Marty keeps track of the data versions in a table called \textit{marty\_updates} (see table X).
+
+% TODO insert table and fix reference
+
+\subsection{Data definition}
+Marty records information about the schemas in master to the table \textit{marty\_schemas} (see table X) and information about the tables in master and their columns is recorded to \textit{marty\_tables} (see table X) and \textit{marty\_columns} (see table X) respectively.
+
+% TODO insert tables and fix references
+
+The information in those tables is read from the system catalogs in Postgres. The schema information comes from \textit{pg\_namespace}, the table information is from \textit{pg\_class} and the column information is from \textit{pg\_attributes} except for the type names which are stored in \textit{pg\_type}.
+
+\subsection{Content}
+For each user created table in master there is a corresponding data table created in history that contains its contents. When table information has been added to \textit{marty\_tables} and \textit{marty\_columns} this table is created. Its name is on the form \textit{data\_[schema]\_[table]\_[update]} where \textit{schema} is the name of the schema it belongs to, \textit{table} is the name of the table in master and \textit{update} is the ID of the version this table was created in. This naming convention allows tables from all schemas in master to be created in the default schema in history without any naming conflicts, which simplifies the management of the content tables. It also prevents conflicts in the case of table name reuse (e.g. a new table uses the name of an old table that has been dropped) by including the version ID.
+
+The tables contain the same columns as the original tables in master with the addition of three metadata columns, see table X. The first one, \textit{data\_ctid}, is used as an ID to locate rows when they are deleted or updated. It contains the value of the \textit{ctid} column in the original master table. The other two, \textit{start} and \textit{stop} are foreign keys to \textit{marty\_update} and are used to decide which rows are part of which version of the data.
+
+The other columns contain the same data as the original table in master but their names are on the form \textit{data\_[column]\_[update]} where \textit{column} is the name of the column in master and \textit{update} is the version ID, similar to the \textit{update} part in the table names. This naming convention is used to prevent conflicts both in the case of column name reuse (when a new column uses the name of an old, dropped column in the same table) and with the names o the metadata columns.
+
+% TODO insert table
+
+\end{document}
