@@ -206,6 +206,25 @@ The emphasis in the design and development of Marty was to minimize the time fro
 
 Marty is supposed to be used in an environment where a one or a few databases need to be cloned regularly. The architecture that was chosen for Marty requires a system administrator to set up and configure Marty for the environment where it is used. This involves running a dedicated Postgres instance that is used as a reference when the clones are created and also configuring the production server to work with this dedicated instance in a certain way, which might require the production server to be restarted. It should therefore be clear that Marty is not suited for cloning a database that only needs to be cloned for a limited number of times and should be most useful when the database to be cloned is large enough, or is expected to grow enough, that the time saved by using Marty justifies the initial setup.
 
+
+\chapter{Architecture}
+This chapter contains a detailed description of the architecture and design of Marty with references to the internal parts of Postgres that are releveant for each part of Marty. It also includes ideas that were not pursued and the reasoning behind the decisions that were made in the design process.
+
+\section{Overview}
+Marty consists of a few parts that serve different pruposes, see figure TODO. Developers and testers that use Marty in their work create database \textit{clones}. These databases are clones of the \textit{master} database, which can be a database that is used in a production environment. When the clones are created they are initialized with a copy of all the tables in the master, but the tables remain empty until they are queried by a user or an application. The design of the clone databases is discuessed in chapter TODO.
+
+% TODO insert figure
+
+Marty does not inspect the schema of the master database directly when it creates the tabes in the clone databases. Instead it queries another database that is called \textit{history}. This database contains a copy of the schema of the master database along with a copy of the data that the master contains. When the clones need to populate their tables they also use this history database as a reference. The reason for using another database to store a copy of the schema and data of the master database is discussed in chapter TODO, along with a description of the design of the history database.
+
+As the name suggests the history database contains not only a copy of the current version of the master database but also a copy of previous versions. To update the history database with new versions of the master and to keep it in sync with the changes that are made on the master Marty uses a log from the master that is called the \textit{write-ahead log} or \textit{WAL}. It does not read this log directly but uses a specially patched instance of Postgres to read the contents of the log. This instance is called \textit{slave} and it outputs information that Marty can use to update the history database with all the changes that have been made in the master database. The reason for keeping old versions of the master database and the relationship between the master, slave and history databases is described in detail in chapter TODO.
+
+\section{The clones}
+-
+
+\section{The history database}
+-
+
 \chapter{Postgres}
 This chapter provides a short history of PostgreSQL along with an overview of the features and internal design that Marty builds on.
 
