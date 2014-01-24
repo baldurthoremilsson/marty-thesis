@@ -197,10 +197,10 @@ The goal of Marty is to offer a convenient and relatively efficient way to run t
 
 % TODO rewrite this section when the thesis is complete: The rest of this thesis is organized as follows: chapter 2 contains details about the history of Postgres and its internals that are relevant to Marty. In chapter 3 the design of Marty is described along with reasoning for why this design was chosen and some details about the implementation of Marty. The fourth and final chapter contains conclusions and future work.
 
-\chapter{Goals and uses}
+\chapter{Goals and purpose of Marty}
 The goal of the development of Marty was to create an application that enabled its users to clone a running database quickly. The original idea was that software developers and testers should be able to clone a database that is used in production and stores large amounts of data that would normally take a considerable time to copy to another server. Marty should speed up development and testing by reducing the time it takes to clone the production database and should also use techniques that reduce or prevent any negative impact that the cloning would have on the production database. 
 
-Although the initial idea was for production databases to be cloned there should not be anything that prevents Marty to be used for other kinds of servers, such as servers that are dedicated to storing testing datasets that never enter production, as long as they fulfill the requirements for Marty.
+Although the initial idea was for production databases to be cloned there should not be anything that prevents Marty to be used for other kinds of databases, such as databases that are dedicated to storing test datasets that never enter production, as long as those databases fulfill the requirements for Marty.
 
 The emphasis in the design and development of Marty was to minimize the time from when the cloning of a database was initialized and until the newly created clone could be used for testing. The performance of the newly created database was not a high priority as it was not intended to be used in a performance critical environment. Thus Marty is not a solution that should be used to create clones of a database that are to be used for load balancing or failover or serve any other role in the production envorinment of an application.
 
