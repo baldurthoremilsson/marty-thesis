@@ -225,7 +225,24 @@ Marty does not inspect the schema of the master database directly when it create
 As the name suggests the history database contains not only a copy of the current version of the master database but also a copy of previous versions. To update the history database with new versions of the master and to keep it in sync with the changes that are made on the master Marty uses a log from the master that is called the \textit{write-ahead log} or \textit{WAL}. It does not read this log directly but uses a specially patched instance of Postgres to read the contents of the log. This instance is called \textit{slave} and it outputs information that Marty can use to update the history database with all the changes that have been made in the master database. The reason for keeping old versions of the master database and the relationship between the master, slave and history databases is described in detail in chapter TODO.
 
 \section{The clones}
--
+\label{sec:clones}
+A clone database is a standard Postgres database. It uses two Postgres extensions; the \textit{PL/pgSQL} extension that enables users to create stored procedures, and the \textit{dblink} extension which enables users to query another database directly from the clone database without using any external scripts or programs. The clone can run on a local instance of Postgres on the developers' or testers' computer as long as the history database is accessible from that computer. More than one clone database can run in parallel on the same instance of Postgres so each user can use many clones at the same time.
+
+To create a clone the user creates a new, empty database. She then initializes it with Marty. After the clone has been initialized it contains all the schemas that are found in the master database and a copy of all the tables from each schema. The tables remain empty until they are first queried to save time in the initialization. To populate the tables when they are queried Marty actually creates views insetad of tables and keeps the actual tables elsewhere, see figure \ref{clone-architecture}. The views look like the tables that are in the master database and in addition to the schemas from the master Marty creates a schema in the clone that is called \textit{marty}. Therein lie the actual tables that store the data from the master which are empty when the clone has been initialized.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.5\textwidth]{clone-architecture}
+  \caption{Table layout in a clone database}
+  \medskip
+  \footnotesize
+  An example of where a clone database stores the data from the master. In the clone the table \textit{mytable} is actually a view that returns results from the table \textit{data\_myschema\_mytable\_1} which is in the \textit{marty} schema. The name of the table and its columns as well as the purpose of the extra columns is described in chapter TODO
+  \label{clone-architecture}
+\end{figure}
+
+When the user queries the views Postgres executes a PL/pgSQL function called \textit{view\_select} that Marty created. This function returns the results from the data tables in the marty schema after it populates them with data from the history database. Marty keeps track of which tables have been populated and which ones are still empty in a table called \textit{bookkeeping} which is in the marty schema. This table also contains information that Marty uses to look up the correct data in the history database. A detailed description of the bookkeeping table and the views, the \textit{view\_select} function and the data tables can be found in chapter TODO.
+
+\subsection{-}
 
 \section{The history database}
 -
