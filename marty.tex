@@ -166,10 +166,14 @@ Reykjavik, Iceland, \thesismonth~\thesisyear \\
 
 \setcounter{page}{3}
 \section*{\huge Abstract}
-Marty is a proof-of-concept prototype for a framework that offers convenient application development and testing against data used in production that is stored in the PostgreSQL database management system. It is designed for minimal overhead and configuration on production servers while offering quick and simple database initialization on development and testing servers. This opens the possibility for application testing on production data with minimal effort, which complements conventional testing datasets and helps preventing bugs from entering production code which were not caught with the conventional datasets.
+Marty is a proof-of-concept prototype for a framework that offers convenient application development and testing against data used in production that is stored in the PostgreSQL database management system.
+It is designed for minimal overhead and configuration on production servers while offering quick and simple database initialization on development and testing servers.
+This opens the possibility for application testing on production data with minimal effort, which complements conventional testing datasets and helps preventing bugs from entering production code which were not caught with the conventional datasets.
 \vfill \vspace*{1cm}
 \section*{\huge Útdráttur}
-Marty er hugbúnaðarlausn sem býður upp á þægilegt þróunar- og prófunarumhverfi fyrir forrit sem nota PostgreSQL gagnagrunnskerfið. Hún er hönnuð til að nota gögn úr gagnagrunnum sem keyra í raunumhverfi án þess að hafa neikvæð áhrif á afköst netþjónanna sem grunnarnir keyra á og án mikilla breytinga á uppsetningu þeirra en bjóða á sama tíma upp á fljótlega og einfalda uppsetningu þróunar- og prófunargagnagrunna. Það opnar fyrir möguleikann á hugbúnaðaprófunum með raungögnum án mikillar fyrirhafnar sem geta keyrt samhliða prófunum með hefðbundin prófunargagnasett og hjálpað við að uppræta villur sem koma ekki í ljós með hefðbundnum prófunum.
+Marty er hugbúnaðarlausn sem býður upp á þægilegt þróunar- og prófunarumhverfi fyrir forrit sem nota PostgreSQL gagnagrunnskerfið.
+Hún er hönnuð til að nota gögn úr gagnagrunnum sem keyra í raunumhverfi án þess að hafa neikvæð áhrif á afköst netþjónanna sem grunnarnir keyra á og án mikilla breytinga á uppsetningu þeirra en bjóða á sama tíma upp á fljótlega og einfalda uppsetningu þróunar- og prófunargagnagrunna.
+Það opnar fyrir möguleikann á hugbúnaðaprófunum með raungögnum án mikillar fyrirhafnar sem geta keyrt samhliða prófunum með hefðbundin prófunargagnasett og hjálpað við að uppræta villur sem koma ekki í ljós með hefðbundnum prófunum.
 \vfill
 \newpage
 
@@ -191,27 +195,48 @@ The section could be titled: Glossary, Variable Names, etc.
 \chapter{Introduction}
 \pagenumbering{arabic}
 \setcounter{page}{1}
-Database management systems (DBMS) are used as datastores in many different systems in various fields. They are rarely used as standalone products and are usually used to store data from other applications. These applications are often in constant development with short development cycles, which include both manual and automated testing. Those  tests are often run against datasets that are created to test for specific conditions and ideally they help with catching all bugs before they enter production. However, many projects can benefit from tests that are run against data from the production environment, either to complement the testing datasets or to provide data to test against in situatios where no testing datasets exist. The main disadvantage of using production data in testing is that cloning a large database can take a long time which slows down testing and development and it adds an overhead to the database in production which can have negative effects on the performance of the application in the production environment.
+Database management systems (DBMS) are used as datastores in many different systems in various fields.
+They are rarely used as standalone products and are usually used to store data from other applications.
+These applications are often in constant development with short development cycles, which include both manual and automated testing.
+Those  tests are often run against datasets that are created to test for specific conditions and ideally they help with catching all bugs before they enter production. However, many projects can benefit from tests that are run against data from the production environment, either to complement the testing datasets or to provide data to test against in situatios where no testing datasets exist.
+The main disadvantage of using production data in testing is that cloning a large database can take a long time which slows down testing and development and it adds an overhead to the database in production which can have negative effects on the performance of the application in the production environment.
 
-The goal of Marty is to offer a convenient and relatively efficient way to run tests for applications that use the PostgreSQL (Postgres) DBMS against the live data on the production servers without adding overhead to them. This is achieved by creating a testing database with empty tables that are populated  when they are first queried. This saves time as only the tables which are used in the tests are populated and no time is spent copying the data for the other tables, which remain empty. The data is not copied directly from the production server but from another instance of Postgres that stores a copy of the production data. This is done to ensure the consistency of the data in the cloned databases and also to minimize the load on the production database. A byproduct of this architecture is the possibility to inspect the state of the production database as it was at a certain point in time and also to inspect the changes that were made to the database, both to the schema and to the data, in the order that they were executed.
+The goal of Marty is to offer a convenient and relatively efficient way to run tests for applications that use the PostgreSQL (Postgres) DBMS against the live data on the production servers without adding overhead to them.
+This is achieved by creating a testing database with empty tables that are populated  when they are first queried.
+This saves time as only the tables which are used in the tests are populated and no time is spent copying the data for the other tables, which remain empty.
+The data is not copied directly from the production server but from another instance of Postgres that stores a copy of the production data.
+This is done to ensure the consistency of the data in the cloned databases and also to minimize the load on the production database.
+A byproduct of this architecture is the possibility to inspect the state of the production database as it was at a certain point in time and also to inspect the changes that were made to the database, both to the schema and to the data, in the order that they were executed.
 
 % TODO rewrite this section when the thesis is complete: The rest of this thesis is organized as follows: chapter 2 contains details about the history of Postgres and its internals that are relevant to Marty. In chapter 3 the design of Marty is described along with reasoning for why this design was chosen and some details about the implementation of Marty. The fourth and final chapter contains conclusions and future work.
 
 \chapter{Goals and purpose of Marty}
-The goal of the development of Marty was to create an application that enabled its users to clone a running database quickly. The original idea was that software developers and testers should be able to clone a database that is used in production and stores large amounts of data that would normally take a considerable time to copy to another server. Marty should speed up development and testing by reducing the time it takes to clone the production database and should also use techniques that reduce or prevent any negative impact that the cloning would have on the performance of the production database. 
+The goal of the development of Marty was to create an application that enabled its users to clone a running database quickly.
+The original idea was that software developers and testers should be able to clone a database that is used in production and stores large amounts of data that would normally take a considerable time to copy to another server.
+Marty should speed up development and testing by reducing the time it takes to clone the production database and should also use techniques that reduce or prevent any negative impact that the cloning would have on the performance of the production database. 
 
 Although the initial idea was for production databases to be cloned there should not be anything that prevents Marty to be used for other kinds of databases, such as databases that are dedicated to storing test datasets that never enter production, as long as those databases fulfill the requirements for Marty.
 
-The emphasis in the design and development of Marty was to minimize the time from when the cloning of a database was initialized and until the newly created clone could be used for testing. The performance of the newly created database was not a high priority as it was not intended to be used in a performance critical environment. Thus Marty is not a solution that should be used to create clones of a database that are to be used for load balancing or failover or serve any other role in the production envorinment of an application.
+The emphasis in the design and development of Marty was to minimize the time from when the cloning of a database was initialized and until the newly created clone could be used for testing.
+The performance of the newly created database was not a high priority as it was not intended to be used in a performance critical environment.
+Thus Marty is not a solution that should be used to create clones of a database that are to be used for load balancing or failover or serve any other role in the production envorinment of an application.
 
-Marty is supposed to be used in an environment where a one or a few databases need to be cloned regularly. The architecture that was chosen for Marty requires a system administrator to set up and configure Marty for the environment where it is used. This involves running a dedicated Postgres instance that is used as a reference when the clones are created and also configuring the production server to work with this dedicated instance in a certain way, which might require the production server to be restarted. It should therefore be clear that Marty is not suited for cloning a database that only needs to be cloned for a limited number of times and should be most useful when the database to be cloned is large enough, or is expected to grow enough, that the time saved by using Marty justifies the initial setup.
+Marty is supposed to be used in an environment where a one or a few databases need to be cloned regularly.
+The architecture that was chosen for Marty requires a system administrator to set up and configure Marty for the environment where it is used.
+This involves running a dedicated Postgres instance that is used as a reference when the clones are created and also configuring the production server to work with this dedicated instance in a certain way, which might require the production server to be restarted.
+It should therefore be clear that Marty is not suited for cloning a database that only needs to be cloned for a limited number of times and should be most useful when the database to be cloned is large enough, or is expected to grow enough, that the time saved by using Marty justifies the initial setup.
 
 
 \chapter{Architecture}
-This chapter contains a detailed description of the architecture and design of Marty with references to the internal parts of Postgres that are releveant for each part of Marty. It also includes ideas that were not pursued and the reasoning behind the decisions that were made in the design process.
+This chapter contains a detailed description of the architecture and design of Marty with references to the internal parts of Postgres that are releveant for each part of Marty.
+It also includes ideas that were not pursued and the reasoning behind the decisions that were made in the design process.
 
 \section{Overview}
-Marty consists of a few parts that serve different pruposes, see figure \ref{architecture-overview}. Developers and testers that use Marty in their work create database \textit{clones}. These databases are clones of the \textit{master} database, which can be a database that is used in a production environment. When the clones are created they are initialized with a copy of all the tables in the master, but the tables remain empty until they are queried by a user or an application. The design of the clone databases is discuessed in chapter \ref{sec:clones}.
+Marty consists of a few parts that serve different pruposes, see figure \ref{architecture-overview}.
+Developers and testers that use Marty in their work create database \textit{clones}.
+These databases are clones of the \textit{master} database, which can be a database that is used in a production environment.
+When the clones are created they are initialized with a copy of all the tables in the master, but the tables remain empty until they are queried by a user or an application.
+The design of the clone databases is discuessed in chapter \ref{sec:clones}.
 
 \begin{figure}[h!]
   \centering
@@ -220,17 +245,38 @@ Marty consists of a few parts that serve different pruposes, see figure \ref{arc
   \label{architecture-overview}
 \end{figure}
 
-Marty does not inspect the schema of the master database directly when it creates the tabes in the clone databases. Instead it queries another database that is called \textit{history}. It contains a copy of the schema of the master database as well as a copy of the data that the master contains. When the clones need to populate their tables they also use this history database as a reference. The reason for using another database to store a copy of the schema and data of the master database is discussed in chapter TODO, along with a description of the design of the history database.
+Marty does not inspect the schema of the master database directly when it creates the tabes in the clone databases.
+Instead it queries another database that is called \textit{history}.
+It contains a copy of the schema of the master database as well as a copy of the data that the master contains.
+When the clones need to populate their tables they also use this history database as a reference.
+The reason for using another database to store a copy of the schema and data of the master database is discussed in chapter TODO, along with a description of the design of the history database.
 
-As the name suggests the history database contains not only a copy of the current version of the master but also of previous versions. To update the history database with new versions of the master and to keep it in sync with the changes that are made on the master Marty uses a log from the master that is called the \textit{write-ahead log} or \textit{WAL}. It does not read this log directly but uses a specially patched instance of Postgres to read the contents of the log. This instance is called \textit{slave} and it outputs information that Marty can use to update the history database with all the changes that have been made in the master database. The reason for keeping old versions of the master database and the relationship between the master, slave and history databases is described in detail in chapter TODO.
+As the name suggests the history database contains not only a copy of the current version of the master but also of previous versions.
+To update the history database with new versions of the master and to keep it in sync with the changes that are made on the master Marty uses a log from the master that is called the \textit{write-ahead log} or \textit{WAL}.
+It does not read this log directly but uses a specially patched instance of Postgres to read the contents of the log.
+This instance is called \textit{slave} and it outputs information that Marty can use to update the history database with all the changes that have been made in the master database.
+The reason for keeping old versions of the master database and the relationship between the master, slave and history databases is described in detail in chapter TODO.
 
 \section{The clone databases}
 \label{sec:clones}
-A clone database is a standard Postgres database. It uses two Postgres extensions; the \textit{PL/pgSQL} extension that enables users to create stored procedures, and the \textit{dblink} extension which enables users to query another database directly from the clone database without using any external scripts or programs. The clone can run on a local instance of Postgres on the developers' or testers' computer as long as the history database is accessible from that computer. More than one clone database can run in parallel on the same instance of Postgres so each user can use many clones at the same time.
+A clone database is a standard Postgres database.
+It uses two Postgres extensions; the \textit{PL/pgSQL} extension that enables users to create stored procedures, and the \textit{dblink} extension which enables users to query another database directly from the clone database without using any external scripts or programs.
+The clone can run on a local instance of Postgres on the developers' or testers' computer as long as the history database is accessible from that computer.
+More than one clone database can run in parallel on the same instance of Postgres so each user can use many clones at the same time.
 
-To create a clone the user creates a new, empty database. She then initializes it with Marty. After the clone has been initialized it contains all the schemas that are found in the master database and a copy of all the tables from each schema. The tables remain empty until they are first queried which saves time in the initialization as the user does not have to wait for Marty to finish copying all the data in the tables before she can start querying the clone. This behaviour is implemented by creating views instead of tables in the clone. The views look like the tables that the user expects to find and when they are queried they call a PL/pgSQL function, \textit{view\_select}, that returns the appropriate data. This function looks for the data in the actual data tables, which Marty creates in the clone, and if these tables are empty the function populates them with data from the history database before returning their contents.
+To create a clone the user creates a new, empty database.
+She then initializes it with Marty.
+After the clone has been initialized it contains all the schemas that are found in the master database and a copy of all the tables from each schema.
+The tables remain empty until they are first queried which saves time in the initialization as the user does not have to wait for Marty to finish copying all the data in the tables before she can start querying the clone.
+This behaviour is implemented by creating views instead of tables in the clone.
+The views look like the tables that the user expects to find and when they are queried they call a PL/pgSQL function, \textit{view\_select}, that returns the appropriate data.
+This function looks for the data in the actual data tables, which Marty creates in the clone, and if these tables are empty the function populates them with data from the history database before returning their contents.
 
-The data tables are created in a special schema called \textit{marty} which is created in the clone database. It contains the data tables as well as another table called bookkeeping. The view\_select function uses this table to keep track of which data tables have been populated and which ones are still unpopulated. The table also contains the querystrings that view\_select uses when it fetches the data from the history database. See figure \ref{clone-architecture} for an example of a table layout in a clone database.
+The data tables are created in a special schema called \textit{marty} which is created in the clone database.
+It contains the data tables as well as another table called bookkeeping.
+The view\_select function uses this table to keep track of which data tables have been populated and which ones are still unpopulated.
+The table also contains the querystrings that view\_select uses when it fetches the data from the history database.
+See figure \ref{clone-architecture} for an example of a table layout in a clone database.
 
 The views, bookkeeping table, data tables and the view\_select function are described in detail in chapter TODO.
 
@@ -248,7 +294,11 @@ The views, bookkeeping table, data tables and the view\_select function are desc
 -
 
 \section{Advantages and Drawbacks}
-The current architecture of Marty that is described in this chapter was chosen because of its simplicity and because it could be implemented in high level code (PL/pgSQL instead of C) which sped up prototyping and simplified the deployment of Marty. However, it has a few drawbacks which make it unsuitable for a production ready version of Marty. The main drawback is the lack of optimization for queries from the clones to the history database; when a user queries a table in a clone database it fetches the complete contents of that table from the history database even if the query should only return a small part of it to the user. Another issue is the creation of indexes for the tables in the clones; the user can not create indexes for the tables in the clone like she would create them on the master database. This is because the tables that the user expects to find in the clone database are actually views and it is not possible to create indexes for views in Postgres.
+The current architecture of Marty that is described in this chapter was chosen because of its simplicity and because it could be implemented in high level code (PL/pgSQL instead of C) which sped up prototyping and simplified the deployment of Marty.
+However, it has a few drawbacks which make it unsuitable for a production ready version of Marty.
+The main drawback is the lack of optimization for queries from the clones to the history database; when a user queries a table in a clone database it fetches the complete contents of that table from the history database even if the query should only return a small part of it to the user.
+Another issue is the creation of indexes for the tables in the clones; the user can not create indexes for the tables in the clone like she would create them on the master database.
+This is because the tables that the user expects to find in the clone database are actually views and it is not possible to create indexes for views in Postgres.
 
 See chapter TODO for a discussion of the current status of Marty, the limitations of the current version and ideas for future works and improvements.
 
