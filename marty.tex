@@ -291,7 +291,59 @@ The views, bookkeeping table, data tables and the view\_select function are desc
 \end{figure}
 
 \section{The history database}
--
+The history database is a standard Postgres database.
+It is created by a system administrator and contains data that the developers and testers use when they create clone databases.
+When the history database has been initialized it contains information about the schema of the master database and a copy of its data.
+After the initialization Marty updates the history database with all the changes that are made in the master, both to its data and schema.
+Its contents are versioned and, as the name suggests, the user can look up previous states of the master in the history database.
+
+The reason for keeping old versions of the master is the delayed population of the data tables in the clones.
+From the moment that a clone database is initialized and until its tables are populated the master database might change.
+Tables might be dropped or renamed and rows might be updated or deleted, which could lead to inconsistency in the clone as foreign key relations might break.
+The history database offers access to a particular version of the contents of the master database and thus prevents errors of this kind in the clones.
+
+Marty initializes the history database with four tables; \textit{marty\_schemas}, \textit{marty\_tables}, \textit{marty\_columns} and \textit{marty\_updates}.
+The first three store information about the schemas, tables and table columns in the master database.
+Their contents are mostly copied from the tables \textit{pg\_namespace}, \textit{pg\_class} and \textit{pg\_attributes}, respectively.
+The fourth table, \textit{marty\_updates}, keeps a log of version timestamps.
+Each version of the contents of the history database has two timestamps associated with it; the local time of the history server when that version was created in the history database and the time of the transaction on the master database that created that version.
+
+Marty copies the data from the tables in the master and stores it in special data tables in the history database.
+Each table in the master has a corresponding data table in the history database.
+Its schema is similar to the original table but a few columns are added.
+They are used for versioning and as a reference when rows are deleted or updated.
+There are also no constraints on the data tables or their columns.
+They are unnecessary as the data table is only used to store the data that has already been validated on the master.
+Constraints might also get in the way, e.g. when the tables need to store different versions of the same row that has a unique constraint on some of its columns.
+Another example might be a table that is altered and a not-null constraint is added to one of its columns where null values have been stored in the past.
+Therefore there are no constraints on the data tables in the history database.
+For an example of the schema of a data table see figure \ref{history-data-table}, and for further details see chapter TODO.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.5\textwidth]{history-data-table}
+  \caption{An example of the schema of a data table in the history database}
+  \label{history-data-table}
+\end{figure}
+
+\subsection{Populating and updating the history database}
+When the history database is initialized its contents are not read directly from the master database.
+Instead there is a dedicated instance of Postgres that replicates the master database that is used as a reference for the history.
+This instance is called \textit{slave}.
+The reason for using another instance to read the schema and data from the master is the format of the write-ahead log, or WAL.
+
+The contents of the WAL are used to update the history database with the changes that are made to the master after the history has been initialized.
+This approach was chosen because it makes it possible to read the changes that are made to the master database without inspecting it directy, e.g. with triggers.
+That was considered important in the design process for Marty because any change on the master might introduce bugs and reduce its performance.
+However, the WAL contains binary information and to be able to read it and use its contents it is necessary to have the database cluster files from the master as a reference.
+Instead of implementing a complex algorithm to read the contents of the WAL it was decided to leverage on the recovery feature of Postgres that reads the WAL and applies it to the database cluster.
+The slave is therefor started with a copy of the cluster files from the master database and it then replays the WAL into the cluster as it arrives from the master.
+As it does so it logs all the operations that it replays and Marty uses this log to find and read the new version of the data from the slave.
+
+The WAL debug log that logs all the operations is not enabled by default and the slave must therefor be compiled with special flags to enable it.v
+The replay must also be paused after each transaction that has been replayed to give Marty time to read the data from that transaction before the next one is applied.
+To be able to do that it is necessary to patch Postgres and so the slave therefor runs on a specially patched version of Postgres.
+More information about the slave can be found in chapter TODO.
 
 \section{Advantages and Drawbacks}
 The current architecture of Marty that is described in this chapter was chosen because of its simplicity and because it could be implemented in high level code (PL/pgSQL instead of C) which sped up prototyping and simplified the deployment of Marty.
