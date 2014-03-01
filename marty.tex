@@ -346,7 +346,7 @@ To be able to do that it is necessary to patch Postgres and so the slave therefo
 More information about the slave can be found in chapter TODO.
 
 \section{Advantages and Drawbacks}
-The current architecture of Marty that is described in this chapter was chosen because of its simplicity and because it could be implemented in high level code (PL/pgSQL instead of C) which sped up prototyping and simplified the deployment of Marty.
+The current architecture of Marty that is described in this chapter was chosen because of its simplicity and because it could be implemented in high level code (PL/pgSQL instead of C) which sped up prototyping and simplified the development of Marty.
 However, it has a few drawbacks which make it unsuitable for a production ready version of Marty.
 The main drawback is the lack of optimization for queries from the clones to the history database; when a user queries a table in a clone database it fetches the complete contents of that table from the history database even if the query should only return a small part of it to the user.
 Another issue is the creation of indexes for the tables in the clones; the user can not create indexes for the tables in the clone like she would create them on the master database.
