@@ -246,7 +246,7 @@ The design of the clone databases is discuessed in chapter \ref{sec:clones}.
 
 Marty does not inspect the schema of the master database directly when it creates the tabes in the clone databases.
 Instead it queries another database that is called \textit{history}.
-It contains a copy of the schema of the master database as well as a copy of the data that the master contains.
+The history database contains information about the schema of the master database as well as a copy of its data.
 When the clones need to populate their tables they also use this history database as a reference.
 The reason for using another database to store a copy of the schema and data of the master database is discussed in chapter TODO, along with a description of the design of the history database.
 
