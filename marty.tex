@@ -198,7 +198,7 @@ The section could be titled: Glossary, Variable Names, etc.
 Database management systems (DBMS) are used as datastores in many different systems in various fields.
 They are rarely used as standalone products and are usually used to store data from other applications.
 These applications are often in constant development with short development cycles, which include both manual and automated testing.
-Those  tests are often run against datasets that are created to test for specific conditions and ideally they help with catching all bugs before they enter production. However, many projects can benefit from tests that are run against data from the production environment, either to complement the testing datasets or to provide data to test against in situatios where no testing datasets exist.
+Those  tests are often run against datasets that are created to test for specific conditions and ideally they help with catching all bugs before they enter production. However, many projects can benefit from tests that are run against data from the production environment, either to complement the testing datasets or to provide data to test against in situations where no testing datasets exist.
 The main disadvantage of using production data in testing is that cloning a large database can take a long time which slows down testing and development and it adds an overhead to the database in production which can have negative effects on the performance of the application in the production environment.
 
 The goal of Marty is to offer a convenient and relatively efficient way to run tests for applications that use the PostgreSQL (Postgres) DBMS against the live data on the production servers without adding overhead to them.
@@ -340,7 +340,7 @@ Instead of implementing a complex algorithm to read the contents of the WAL it w
 The slave is therefor started with a copy of the cluster files from the master database and it then replays the WAL into the cluster as it arrives from the master.
 As it does so it logs all the operations that it replays and Marty uses this log to find and read the new version of the data from the slave.
 
-The WAL debug log that logs all the operations is not enabled by default and the slave must therefor be compiled with special flags to enable it.v
+The WAL debug log that logs all the operations is not enabled by default and the slave must therefor be compiled with special flags to enable it.
 The replay must also be paused after each transaction that has been replayed to give Marty time to read the data from that transaction before the next one is applied.
 To be able to do that it is necessary to patch Postgres and so the slave therefor runs on a specially patched version of Postgres.
 More information about the slave can be found in chapter TODO.
