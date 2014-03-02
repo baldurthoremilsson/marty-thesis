@@ -206,7 +206,7 @@ This is achieved by creating a testing database with empty tables that are popul
 This saves time as only the tables which are used in the tests are populated and no time is spent copying the data for the other tables, which remain empty.
 The data is not copied directly from the production server but from another instance of Postgres that stores a copy of the production data.
 This is done to ensure the consistency of the data in the cloned databases and also to minimize the load on the production database.
-A byproduct of this architecture is the possibility to inspect the state of the production database as it was at a certain point in time and also to inspect the changes that were made to the database, both to the schema and to the data, in the order that they were executed.
+A byproduct of this architecture is the possibility to inspect the state of the production database as it was at a certain point in time.
 
 % TODO rewrite this section when the thesis is complete: The rest of this thesis is organized as follows: chapter 2 contains details about the history of Postgres and its internals that are relevant to Marty. In chapter 3 the design of Marty is described along with reasoning for why this design was chosen and some details about the implementation of Marty. The fourth and final chapter contains conclusions and future work.
 
@@ -228,8 +228,7 @@ It should therefore be clear that Marty is not suited for cloning a database tha
 
 
 \chapter{Architecture}
-This chapter contains a detailed description of the architecture and design of Marty with references to the internal parts of Postgres that are releveant for each part of Marty.
-It also includes ideas that were not pursued and the reasoning behind the decisions that were made in the design process.
+This chapter contains a detailed description of the architecture and design of Marty.
 
 \section{Overview}
 Marty consists of a few parts that serve different pruposes, see figure \ref{architecture-overview}.
