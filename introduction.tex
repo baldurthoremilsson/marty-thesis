@@ -2,16 +2,16 @@
 \pagenumbering{arabic}
 \setcounter{page}{1}
 Database management systems (DBMS) are used as datastores in many different systems in various fields.
-They are rarely used as standalone products and are usually used to store data from other applications.
+They are rarely used as standalone products and are typically used to store data from other applications.
 These applications are often in constant development with short development cycles, which include both manual and automated testing.
 Those  tests are often run against datasets that are created to test for specific conditions and ideally they help with catching all bugs before they enter production. However, many projects can benefit from tests that are run against data from the production environment, either to complement the testing datasets or to provide data to test against in situations where no testing datasets exist.
 The main disadvantage of using production data in testing is that cloning a large database can take a long time which slows down testing and development and it adds an overhead to the database in production which can have negative effects on the performance of the application in the production environment.
 
-The goal of Marty is to offer a convenient and relatively efficient way to run tests for applications that use the PostgreSQL (Postgres) DBMS against the live data on the production servers without adding overhead to them.
+The goal of Marty is to offer a convenient and relatively efficient way to run tests for applications that use the PostgreSQL (Postgres) DBMS against live data on the production servers without adding overhead to them.
 This is achieved by creating a testing database with empty tables that are populated  when they are first queried.
 This saves time as only the tables which are used in the tests are populated and no time is spent copying the data for the other tables, which remain empty.
 The data is not copied directly from the production server but from another instance of Postgres that stores a copy of the production data.
-This is done to ensure the consistency of the data in the cloned databases and also to minimize the load on the production database.
+This ensures the consistency of the data in the cloned databases and also to minimize the load on the production database.
 A byproduct of this architecture is the possibility to inspect the state of the production database as it was at a certain point in time.
 
 % TODO rewrite this section when the thesis is complete: The rest of this thesis is organized as follows: chapter 2 contains details about the history of Postgres and its internals that are relevant to Marty. In chapter 3 the design of Marty is described along with reasoning for why this design was chosen and some details about the implementation of Marty. The fourth and final chapter contains conclusions and future work.

@@ -1,9 +1,8 @@
-
 \chapter{Architecture}
 This chapter contains a detailed description of the architecture and design of Marty.
 
 \section{Overview}
-Marty consists of a few parts that serve different pruposes, see figure \ref{architecture-overview}.
+Marty consists of a few parts that serve different purposes, see figure \ref{architecture-overview}.
 Developers and testers that use Marty in their work create database \textit{clones}.
 These databases are clones of the \textit{master} database, which can be a database that is used in a production environment.
 When the clones are created they are initialized with a copy of all the tables in the master, but the tables remain empty until they are queried by a user or an application.
