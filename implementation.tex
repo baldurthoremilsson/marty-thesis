@@ -1,2 +1,28 @@
 \chapter{Implementation}
-Description of the code and the implementation.
+Marty is written in Python an PL/pgSQL with a small patch to the Postgres source code written in C.
+Python and PL/pgSQL were chosen because they are both high-level programming languages and ideal for rapid prototyping.
+The source code cointains two scripts, \textit{clone.py} and \textit{history.py}, which are used t create and populate the clone databases and the history database, respectively.
+The Postgres patch is necessary for Marty to be able to read the changes from the write-ahead log (WAL) with the slave instance.
+
+This chapter describes the implementation of Marty.
+It explains which parts of Postgres Marty uses to create the history database and keep track of the changes that are made to the master database.
+It starts by explaining how the slave instance is used and why it was necessary to patch it.
+It then continues with a description of the history database and its design and ends with a description of the clone databases and how they use the history database to imitate the master.
+
+\section{The slave instance}
+Marty uses the slave instance to initialize the history database and to inspect the contents of the WAL from the master.
+The slave is configured to act as a \textit{hot standby} for the master; it starts with a copy of the master database and updates it with the WAL from the master.
+It can be queried with read-only queries and Marty takes advantage of that to read the schema and data from the database when it has first started and to inspect the changes that the WAL makes when it is applied.
+This is setup is necessary so Marty can read and record the actions of the WAL.
+The WAL contains binary data that is applied directly to the files in the database cluster that contain the relation data.
+This makes it impossible to read without a copy of the database it logs and Postgres does not offer any libraries for third party programs to read the contents of the WAL.
+Instead of copying a lot of code and functionality from Postgres to read the WAL it was decided to run a patched instance that Marty can query to get the information it needs about what changes the WAL makes.
+This sped up the development of Marty and reduced the amount of code needed to read the WAL and thus reducing the chance for bugs to enter the code.
+
+The main reason for running the slave instance is so that Marty can read the contents of the WAL.
+As a byproduct Marty can use the slave to read the schema and contents of the master database instead of querying it directly.
+This has the benefit of reducing the load on the master when the history database is initialized.
+
+To start the slave instance the database administrator that is in charge of the master must configure it correctly and take a \textit{base-backup} of it.
+The configuration parameters are listed in table TODO and the base-backup can be created with the program \textit{pg\_basebackup} or by running the function \textit{pg\_start\_backup} on the master and copying the cluster files manually, see the Postgres documentation for further details. % TODO add a reference?
+
