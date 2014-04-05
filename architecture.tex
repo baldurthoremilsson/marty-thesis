@@ -131,7 +131,7 @@ For an example of the schema of a data table see figure \ref{history-data-table}
 \end{wrapfigure}
 
 When the history database is initialized its contents are not read directly from the master database.
-Instead there is a dedicated instance of Postgres that replicates the master database that is used as a reference for the history.
+Instead there is a dedicated Postgres instance that replicates the master database that is used as a reference for the history.
 This instance is called \textit{slave}.
 The reason for using another instance to read the schema and data from the master is the format of the write-ahead log, or WAL.
 
@@ -140,12 +140,13 @@ This approach was chosen because it makes it possible to read the changes that a
 That was considered important in the design process for Marty because any change on the master might introduce bugs and reduce its performance.
 However, the WAL contains binary information and to be able to read it and use its contents it is necessary to have the database cluster files from the master as a reference.
 Instead of implementing a complex algorithm to read the contents of the WAL it was decided to leverage on the recovery feature of Postgres that reads the WAL and applies it to the database cluster.
-The slave is therefor started with a copy of the cluster files from the master database and it then replays the WAL into the cluster as it arrives from the master.
-As it does so it logs all the operations that it replays and Marty uses this log to find and read the new version of the data from the slave.
+The slave is therefore started with a copy of the cluster files from the master database and it then replays the WAL into the cluster as it arrives from the master.
+As the WAL is replayed the slave logs information about the operations that it replays and Marty uses this replay log to read the new version of the data from the slave.
 
-The WAL debug log that logs all the operations is not enabled by default and the slave must therefor be compiled with special flags to enable it.
+The replay log is not enabled in the default build of Postgres so the slave must be compiled with a special flag to enable it.
 The replay must also be paused after each transaction that has been replayed to give Marty time to read the data from that transaction before the next one is applied.
-To be able to do that it is necessary to patch Postgres and so the slave therefor runs on a specially patched version of Postgres.
+Marty includes a patch for the Postgres sorce code to enable this pause.
+The slave therefore runs on a specially patched version of Postgres.
 More information about the slave can be found in chapter TODO.
 
 \section{Advantages and Drawbacks}
