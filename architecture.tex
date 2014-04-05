@@ -29,6 +29,17 @@ The reason for keeping old versions of the master database and the relationship 
 
 \section{The clone databases}
 \label{sec:clones}
+
+\begin{wrapfigure}{r}{0.4\textwidth}
+  \vspace{-20pt}
+  \begin{center}
+    \includegraphics[width=0.38\textwidth]{img/architecture-clones}
+  \end{center}
+  \vspace{-20pt}
+  \caption{The clone part of the architecture}
+  \vspace{-10pt}
+\end{wrapfigure}
+
 A clone database is a standard Postgres database.
 It uses two Postgres extensions; the \textit{PL/pgSQL} extension that enables users to create stored procedures, and the \textit{dblink} extension which enables users to query another database directly from the clone database without using any external scripts or programs.
 The clone can run on a local instance of Postgres on the developers' or testers' computer as long as the history database is accessible from that computer.
@@ -61,6 +72,17 @@ The views, bookkeeping table, data tables and the view\_select function are desc
 \end{figure}
 
 \section{The history database}
+
+\begin{wrapfigure}{r}{0.4\textwidth}
+  \vspace{-20pt}
+  \begin{center}
+    \includegraphics[width=0.38\textwidth]{img/architecture-history}
+  \end{center}
+  \vspace{-20pt}
+  \caption{The history part of the architecture}
+  \vspace{-10pt}
+\end{wrapfigure}
+
 The history database is a standard Postgres database.
 It is created by a system administrator and contains data that the developers and testers use when they create clone databases.
 When the history database has been initialized it contains information about the schema of the master database and a copy of its data.
@@ -97,6 +119,17 @@ For an example of the schema of a data table see figure \ref{history-data-table}
 \end{figure}
 
 \subsection{Populating and updating the history database}
+
+\begin{wrapfigure}{r}{0.4\textwidth}
+  \vspace{-20pt}
+  \begin{center}
+    \includegraphics[width=0.38\textwidth]{img/architecture-slave}
+  \end{center}
+  \vspace{-20pt}
+  \caption{The slave part of the architecture}
+  \vspace{-10pt}
+\end{wrapfigure}
+
 When the history database is initialized its contents are not read directly from the master database.
 Instead there is a dedicated instance of Postgres that replicates the master database that is used as a reference for the history.
 This instance is called \textit{slave}.
