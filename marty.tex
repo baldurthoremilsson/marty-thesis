@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt,twoside,BCOR=10mm]{scrbook}
+\documentclass[a4paper,12pt,twoside,BCOR=10mm,listof=totoc]{scrbook}
 
 % Packages
 \usepackage{ucs}
@@ -22,6 +22,7 @@
 \usepackage{tabularx}
 \usepackage{wrapfig}
 \usepackage{courier}
+\usepackage{listings}
 % Configurations
 \graphicspath{{img/}{../img/}}
 
@@ -65,6 +66,18 @@
 \def\thesistutors{Hjálmtýr Hafsteinsson}
 \def\thesisrepresentative{XXNN3}					% Tutors name
 \def\thesisPrinting{Háskólaprent, Fálkagata 2, 107 Reykjavík}
+
+
+%%%% Listing configurations
+
+\lstset{
+  aboveskip=2em,
+  basicstyle=\footnotesize,
+  breaklines=true,
+  captionpos=b
+}
+
+\renewcommand*{\lstlistlistingname}{List of Listings}
 
 % Function to add footer to frontpage
 \newcommand\BackgroundPic{
@@ -182,6 +195,7 @@ Hún er hönnuð til að nota gögn úr gagnagrunnum sem keyra í raunumhverfi �
 \tableofcontents
 \listoffigures
 \listoftables
+\lstlistoflistings
 
 \chapter*{Abbreviations}
 \addcontentsline{toc}{chapter}{Abbreviations}
