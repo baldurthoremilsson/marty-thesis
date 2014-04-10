@@ -5,7 +5,7 @@ The source code cointains two scripts, \textit{clone.py} and \textit{history.py}
 The patch to Postgres is necessary for Marty to be able to read the changes from the write-ahead log (WAL) with the slave instance.
 
 Marty is designed to work with Postgres 9.3.3.
-The patch is written for this version and might not work with other versions, older or newer.
+The patch is written for that version and might not work with other versions.
 
 This chapter describes the implementation of Marty.
 It explains which parts of Postgres Marty uses to create the history database and keep track of the changes that are made to the master database.
@@ -13,3 +13,4 @@ It starts by explaining how the slave instance is used and why it is patched.
 It then continues with a description of the history database and its design and ends with a description of the clone databases and how they use the history database to imitate the master.
 
 \input{implementation-slave}
+\input{implementation-history}
