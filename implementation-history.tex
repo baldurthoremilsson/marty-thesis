@@ -98,7 +98,7 @@ Marty reads information from four system catalogs in the slave database:
 \begin{description}
   \item[pg\_namespace]
     Contains information about the schemas in the slave database.
-    Information from this catalog is saved in \textit{marty\_schemas} in the history database.
+    Information from this catalog is saved in \textit{marty\_schemas} in the history database. % TODO saved in or written to?
   \item[pg\_class]
     Contains information about the tables in the slave database.
     Information from this catalog is saved in \textit{marty\_tables} in the history database.
@@ -110,16 +110,18 @@ Marty reads information from four system catalogs in the slave database:
     Marty reads the name of the column type from this table (integer, text etc.) and stores it in \textit{marty\_columns} along with the other column related information.
 \end{description}
 
-The history.py script creates the schema information tables and then it populates them with information about the slave database schema.
+The history.py script creates the schema information tables and then it populates them with information about the schema of the slave database.
 This is of course also the schema of the master database so the history database really contains information about the master.
-Marty starts by inspecting the schema of the slave database before any WAL records have been applied to it.
-When this is done the first version of the database schema has been saved in the history database.
+
+Marty inspects the schema of the slave database before any WAL records have been applied to it.
+It writes the schema information to the history database, which creates the first history version.
 Marty then starts the WAL replay in the slave database and reads the replay log.
 
-When a new schema is created the replay log contains an insert heap record for the pg\_namespace table.
-Marty queries the slave about this new schema and creates a new history version that includes it.
+When a new schema is created the WAL contains an \textit{insert} heap record for the pg\_namespace table.
+Marty sees this in the replay log and queries the slave about this new schema.
+It then creates a new history version that includes it.
 The same happens when a new table is created or a new column is added to a table; a new history version is created that includes the new table or column.
 
-If a schema, table or column is altered, e.g. when they are renamed, the WAL has a heap update record.
-Similarly when a schema, table or column is dropped the WAL has a heap delete record.
+If a schema, table or column is altered, e.g. when they are renamed, the WAL has an \textit{update} heap record.
+Similarly when a schema, table or column is dropped the WAL has a \textit{delete} heap record.
 Marty sees this in the replay log and creates new history versions with the altered database schema.
