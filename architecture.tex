@@ -2,17 +2,17 @@
 This chapter contains a detailed description of the architecture and design of Marty.
 
 \section{Overview}
-Marty consists of a few parts that serve different purposes, see figure \ref{architecture-overview}.
+Marty consists of a few parts that serve different purposes, see figure \ref{fig:architecture-overview}.
 Developers and testers that use Marty in their work create database \textit{clones}.
 These databases are clones of the \textit{master} database, which can be a database that is used in a production environment.
 When the clones are created they are initialized with a copy of all the tables in the master, but the tables remain empty until they are queried by a user or an application.
-The design of the clone databases is discuessed in chapter \ref{sec:clones}.
+The design of the clone databases is discuessed in chapter \ref{ch:architecture-clone-databases}.
 
 \begin{figure}[h!]
   \centering
     \includegraphics[width=0.8\textwidth]{architecture}
   \caption{An overview of the architecture of Marty}
-  \label{architecture-overview}
+  \label{fig:architecture-overview}
 \end{figure}
 
 Marty does not inspect the schema of the master database directly when it creates the tabes in the clone databases.
@@ -28,7 +28,7 @@ This instance is called \textit{slave} and it outputs information that Marty can
 The reason for keeping old versions of the master database and the relationship between the master, slave and history databases is described in detail in chapter TODO.
 
 \section{The clone databases}
-\label{sec:clones}
+\label{ch:architecture-clone-databases}
 
 \begin{wrapfigure}{r}{0.4\textwidth}
   \vspace{-20pt}
@@ -57,7 +57,7 @@ The data tables are created in a special schema called \textit{marty} which is c
 It contains the data tables as well as another table called bookkeeping.
 The view\_select function uses this table to keep track of which data tables have been populated and which ones are still unpopulated.
 The table also contains the querystrings that view\_select uses when it fetches the data from the history database.
-See figure \ref{clone-tables} for an example of a table layout in a clone database.
+See figure \ref{fig:clone-tables} for an example of a table layout in a clone database.
 
 The views, bookkeeping table, data tables and the view\_select function are described in detail in chapter TODO.
 
@@ -68,7 +68,7 @@ The views, bookkeeping table, data tables and the view\_select function are desc
   \medskip
   \small
   The table \textit{persons} is actually a view that returns results from the table \textit{data\_myschema\_persons\_1} which is in the \textit{marty} schema.
-  \label{clone-tables}
+  \label{fig:clone-tables}
 \end{figure}
 
 \section{The history database}
@@ -109,13 +109,13 @@ They are unnecessary as the data table is only used to store the data that has a
 Constraints might also get in the way, e.g. when the tables need to store different versions of the same row that has a unique constraint on some of its columns.
 Another example might be a table that is altered and a not-null constraint is added to one of its columns where null values have been stored in the past.
 Therefore there are no constraints on the data tables in the history database.
-For an example of the schema of a data table see figure \ref{history-data-table}, and for further details see chapter TODO.
+For an example of the schema of a data table see figure \ref{fig:history-data-table}, and for further details see chapter TODO.
 
 \begin{figure}[h!]
   \centering
     \includegraphics[width=0.5\textwidth]{history-data-table}
   \caption{An example of the schema of a data table in the history database}
-  \label{history-data-table}
+  \label{fig:history-data-table}
 \end{figure}
 
 \subsection{Populating and updating the history database}

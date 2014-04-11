@@ -13,7 +13,7 @@ It starts by creating the \textit{schema information tables} which Marty uses to
     It also stores an internal name for the column that is used in the data tables in the history and clone databases.
 \end{description}
 
-Tables \ref{table:marty-schemas} to \ref{table:marty-columns} show information about the columns of these tables.
+Tables \ref{tbl:marty-schemas} to \ref{tbl:marty-columns} show information about the columns of these tables.
 
 \begin{table}[h]
   \centering
@@ -28,7 +28,7 @@ Tables \ref{table:marty-schemas} to \ref{table:marty-columns} show information a
     stop & integer & First version where this schema stops being present in the database \\
   \end{tabularx}
   \caption{The columns of the marty\_schemas table}
-  \label{table:marty-schemas}
+  \label{tbl:marty-schemas}
 \end{table}
 
 \begin{table}[h]
@@ -46,7 +46,7 @@ Tables \ref{table:marty-schemas} to \ref{table:marty-columns} show information a
     stop & integer & First version where this table stops being present in the database \\
   \end{tabularx}
   \caption{The columns of the marty\_tables table}
-  \label{table:marty-tables}
+  \label{tbl:marty-tables}
 \end{table}
 
 \begin{table}[h]
@@ -65,7 +65,7 @@ Tables \ref{table:marty-schemas} to \ref{table:marty-columns} show information a
     stop & integer & First version where this column stops being part of the table \\
   \end{tabularx}
   \caption{The columns of the marty\_tables table}
-  \label{table:marty-columns}
+  \label{tbl:marty-columns}
 \end{table}
 
 Postgres uses \textit{system catalogs} to store information about the schema of its databases.

@@ -16,7 +16,7 @@ When the slave database is first started Marty copies its schema and data to the
 It then inspects the changes from the WAL as they are applied and updates the history database accordingly.
 
 Before the slave instance is started a database administrator must configure the master.
-This includes configuring a few parameters in the \textit{postgres.conf} file, see table \ref{table:master-config}.
+This includes configuring a few parameters in the \textit{postgres.conf} file, see table \ref{tbl:master-config}.
 Next the administrator must create a \textit{base backup} of the master database.
 A base backup is a copy of the cluster files that store all the data in the database.
 It can be created with the program \textit{pg\_basebackup} and might require changes to the \textit{pg\_hba.conf} file, see the Postgres documentation for further reference. % TODO add referernce?
@@ -38,14 +38,14 @@ It can be created with the program \textit{pg\_basebackup} and might require cha
   \small
   The archive command is an example, when the master is configured it must use an archive command that copies the WAL files to a storage where they are accessible by the slave.
   Also note that \texttt{max\_wal\_senders} must at least be 1, but can be higher.
-  \label{table:master-config}
+  \label{tbl:master-config}
 \end{table}
 
 As previously noted the slave runs on a patched version of Postgres that must be compiled with a special flag that enables Postgres to log the WAL replay actions.
 When the patch has been applied to the Postgres source code it must be compiled with the \texttt{WAL\_DEBUG} CPP flag.
 
 Instead of creating a new database cluster for the slave with the \texttt{initdb} command the administrator uses the base backup from the master.
-When it has been copied to the correct place the \textit{postgres.conf} file must be updated, see table \ref{table:slave-config}.
+When it has been copied to the correct place the \textit{postgres.conf} file must be updated, see table \ref{tbl:slave-config}.
 It is then necessary to add a \textit{recovery.conf} file with a command to fetch the WAL files from the master database, see the Postgres documentation for further reference. % TODO reference?
 
 \begin{table}[h]
@@ -59,7 +59,7 @@ It is then necessary to add a \textit{recovery.conf} file with a command to fetc
     \end{tabular}
   }
   \caption{Configuration parameters in postgres.conf for the slave database}
-  \label{table:slave-config}
+  \label{tbl:slave-config}
 \end{table}
 
 \subsection{Reading the WAL}

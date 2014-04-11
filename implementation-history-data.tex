@@ -6,7 +6,7 @@ These tables are the \textit{data tables} of the history database.
 
 The schema of a data table is not identical to the schema of the original table in the slave database.
 Marty adds three columns for metadata; \textit{\_ctid}, \textit{start} and \textit{stop}.
-These columns are also present in the schema information tables where they serve the same purpose, see chapters \ref{chapter:implementation-history-ctid} and \ref{chapter:implementation-history-versions} for more information.
+These columns are also present in the schema information tables where they serve the same purpose, see chapters \ref{ch:implementation-history-ctid} and \ref{ch:implementation-history-versions} for more information.
 
 When a column is added to the original table in the slave database Marty also adds it to the data table.
 If a column is dropped from the original table Marty still keeps it in the data table.
