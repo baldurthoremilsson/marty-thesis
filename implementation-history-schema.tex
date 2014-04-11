@@ -105,3 +105,5 @@ The same happens when a new table is created or a new column is added to a table
 If a schema, table or column is altered, e.g. when they are renamed, the WAL has an \textit{update} heap record.
 Similarly when a schema, table or column is dropped the WAL has a \textit{delete} heap record.
 Marty sees this in the replay log and creates new history versions with the altered database schema.
+
+% TODO add reference to CTID and Versions subsections
