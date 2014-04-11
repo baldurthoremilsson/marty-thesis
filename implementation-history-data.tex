@@ -1,0 +1,26 @@
+\subsection{Data tables}
+The history database stores a copy of all the data in the tables from the slave database.
+Marty creates a table in the history database for each table in the slave.
+This happens right after Marty has saved the information about the original table to the history database.
+These tables are the \textit{data tables} of the history database.
+
+The schema of a data table is not identical to the schema of the original table in the slave database.
+Marty adds three columns for metadata; \textit{\_ctid}, \textit{start} and \textit{stop}.
+These columns are also present in the schema information tables where they serve the same purpose, see chapters \ref{chapter:implementation-history-ctid} and \ref{chapter:implementation-history-versions} for more information.
+
+When a column is added to the original table in the slave database Marty also adds it to the data table.
+If a column is dropped from the original table Marty still keeps it in the data table.
+This is necessary because Marty keeps old versions of the data in the table and must therefor keep all columns that have been added to the original table.
+
+When a row is deleted from the original table Marty marks it as deleted in the data table.
+The row is still kept in the data table as part of an old history version because the data must still be accessible.
+When a row is updated in the original table Marty inserts a new row into the data table with the updated values and marks the old row as deleted.
+This behaviour is similar to the \textit{multiversion concurrency control} (MVCC) that Postgres uses to allow more than one transaction to use the same table at the same time.
+
+Marty does not copy any constraints from the original tables to the data tables.
+The only data that the data tables contain has been copied from the original tables in the slave database.
+This data confirms to the constraints of the original tables and thus it is unnecessary to replicate the constraints in the data tables.
+The constraints would also cause trouble, e.g. when Marty stores updated rows from a table with a unique constraint.
+If the values of the unique columns are \textit{not} updated but only values in other columns then the data table could not store both the old and the new versions of the rows.
+For these reasons Marty does not copy any constraints from the original tables.
+
