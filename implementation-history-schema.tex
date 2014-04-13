@@ -14,6 +14,7 @@ It starts by creating the \textit{schema information tables} which Marty uses to
 \end{description}
 
 Tables \ref{tbl:marty-schemas} to \ref{tbl:marty-columns} show information about the columns of these tables.
+Figure \ref{fig:schema-information-example} shows an example of their contents.
 
 \begin{table}[h]
   \centering
@@ -41,7 +42,7 @@ Tables \ref{tbl:marty-schemas} to \ref{tbl:marty-columns} show information about
     oid & oid & The ID of the table in the slave database \\
     name & name & The name of the table \\
     schema\_oid & oid & A reference to the schema that this table belongs to \\
-    internal\_name & name & The name of the data tables in the history and clone databases \\
+    internal\_name & name & The name of the data table, see \ref{ch:implementation-history-data} \\
     start & integer & First version where this table is present in the database \\
     stop & integer & First version where this table stops being present in the database \\
   \end{tabularx}
@@ -60,7 +61,7 @@ Tables \ref{tbl:marty-schemas} to \ref{tbl:marty-columns} show information about
     name & name & The name of the column \\
     number & int2 & The index of this column in the table (is it the first, second, third etc.) \\
     type & name & The type of the column (int, text, boolean etc.) \\
-    internal\_name & name & The name of this column in the data tables in the history and clone databases \\
+    internal\_name & name & The name of this column in the data table, see \ref{ch:implementation-history-data} \\
     start & integer & First version where this column is part of the table \\
     stop & integer & First version where this column stops being part of the table \\
   \end{tabularx}
@@ -105,5 +106,16 @@ The same happens when a new table is created or a new column is added to a table
 If a schema, table or column is altered, e.g. when they are renamed, the WAL has an \textit{update} heap record.
 Similarly when a schema, table or column is dropped the WAL has a \textit{delete} heap record.
 Marty sees this in the replay log and creates new history versions with the altered database schema.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.75\textwidth]{schema-information-example}
+  \caption{Example of the contents of the schema information tables}
+  \label{fig:schema-information-example}
+\end{figure}
+
+See figure \ref{fig:schema-information-example} for an example of the contents of the schema information tables.
+In the example the master database has one table, \textit{persons}, with two columns, \textit{age} of type integer and \textit{name} of type text.
+The history part of the examples shows the contents of the schema information tables.
 
 % TODO add reference to CTID and Versions subsections
