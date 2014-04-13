@@ -1,2 +1,53 @@
 \subsection{History versions}
 \label{ch:implementation-history-versions}
+The history database stores multiple versions of the data from the slave database.
+This is necessary because of the delayed population of the tables in the clone databases.
+From the time when a clone is initialized and until its tables are populated with data the slave database can change, causing inconsistency in the clone.
+Therefor the clone must have access to the data as it was when the user initialized the clone database.
+
+When the history database is initialized Marty creates the table \textit{marty\_updates}, see table \ref{tbl:marty-updates} for a list of its columns.
+It stores the ID of each version along with two timestamps, the local time and the master time.
+The local timestamp (in the column \textit{time}) is the time when this version was created in the history database.
+The master time is the time when the transaction that created this version was executed on the master database.
+The ID is a simple counter that starts in 1 and increments by one for each new version.
+
+\begin{table}[h]
+  \centering
+  \textbf{marty\_updates}
+  \begin{tabularx}{\textwidth}{llX}
+    \textit{Column} & \textit{Type} & \textit{Description} \\
+    \midrule
+    id & serial & Primary key - a unique ID for each history version \\
+    time & timestamp & The date and time when this version was created in the history database \\
+    mastertime & timestamp & The date and time of the transaction that created this version on the master database \\
+  \end{tabularx}
+  \caption{ The columns of the marty\_updates table}
+  \label{tbl:marty-updates}
+\end{table}
+
+The schema information tables and data tables in the history database have two columns that tell Marty which versions a particular row is part of.
+These columns are \textit{start} and \textit{stop} and they are foreign keys that reference the version ID the the marty\_updates table.
+See tables \ref{tbl:marty-schemas} to \ref{tbl:marty-columns} for a list of columns in the schema information tables and figure \ref{fig:history-data-table-2} for an example of the columns in a data table.
+
+When a row in inserted into one of the tables in the history database it is part of the current history version.
+Marty inserts the ID of the current version into the \textit{start} column to reflect this.
+When a row is deleted or updated in the slave database the corresponding row in the history database is marked as deleted.
+Marty does this by updating the value in the \textit{stop} column of the deleted row to the current history version ID.
+An example of this is a row where the start ID is 3 and the stop ID is 6.
+This row is part of versions 3, 4 and 5.
+A row that has not been deleted or updated has \textit{null} in the stop column.
+If the current version ID is 10 and a row has start ID 7 and stop ID null then this row is part of versions 7, 8, 9 and 10 and all future versions until it is marked as deleted.
+
+This method is similar to the way Postgres implements \textit{multiversion concurrency control} (MVCC).
+The MVCC is used to allow more than one transaction to use the same table at the same time.
+Postgres creates hidden system columns on all tables called \textit{xmin} and \textit{xmax}.
+They store the \textit{transaction ID} of the transactions that created the row and deleted or updated it, respectively.
+This is similar to the version IDs and the way Marty uses the start and stop columns.
+Marty does not, however, use the values in the xmin and xmax columns to determine the version numbers for the rows in the history database.
+Instead the WAL replay log is used to inspect when each row is created and when it is deleted.
+
+When the history database is initialized Marty inspects the slave database and creates the first history version.
+It contains all schemas and tables in the slave database before any WAL records have been applied to it.
+When Marty is finished inspecting the slave it starts the WAL replay.
+The slave pauses the replay when the first transaction has been applied and Marty creates the second version with all the changes from that transaction.
+Marty then restarts the WAL replay and repeats the process for each new transaction.
