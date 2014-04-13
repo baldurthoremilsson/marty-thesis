@@ -1,2 +1,32 @@
 \subsection{CTID columns}
 \label{ch:implementation-history-ctid}
+The schema information tables have a column called \textit{\_ctid} and the data tables have an identical column called \textit{data\_ctid}.
+The values in these columns reference the values in the \textit{ctid} columns in the corresponding tables in the slave database.
+For the schema information table these are the system catalogs and for the data tables the corresponding tables are the original tables in the slave database.
+
+The ctid column is a hidden system column that Postgres adds to all tables when they are created.
+It is of type \textit{tid}, or tuple identifier, which is a pair of numbers that identify the physical location of the row inside the relation file in the database cluster.
+The relation files are made up of \textit{blocks} which store the contents of the relations.
+Each block contains one or more \textit{tuples} which store the actual data of the table rows.
+The tuple identifier consists of a \textit{block index} and a \textit{tuple index}.
+The block index is zero-based while the tuple index is one-based so the first tuple ID is (0,1).
+
+\begin{lstlisting}[caption={WAL update and delete example},label={lst:wal-update-delete},numbers=left,xleftmargin=2em]
+LOG:  REDO @ 0/60080CC; LSN 0/6008198: prev 0/600806C; xid 735; len 37; bkpb0: Heap - update: rel 1663/16384/16385; tid 0/1 xmax 735 ; new tid 0/2 xmax 0
+LOG:  REDO @ 0/600822C; LSN 0/6008264: prev 0/6008204; xid 737; len 26: Heap - delete: rel 1663/16384/16385; tid 0/3 KEYS_UPDATED
+\end{lstlisting}
+
+The values in this column can be used to identify each row in the database.
+Marty saves this value in the schema information tables and data tables to be able to identify deleted and updated rows.
+The WAL replay log from the slave instance contains the tuple identifier of the rows that are updated or deleted in the WAL records.
+Marty uses the tid to locate the correct row in the schema information tables or data tables in the history database and marks these rows as deleted.
+See listing \ref{lst:wal-update-delete} for an example.
+In the example the update record in the first line inserts a new row with tid value of (0,2) to replace the old values in row with tid value of (0,1).
+The delete record in the second line deletes a row with tid value of (0,3).
+
+Note that the value of the ctid column can change, e.g. when Postgres \textit{vacuums} the table or when a row is updated.
+Therefor it is not a viable long-term key to identify the row.
+This does not affect the way Marty uses it because it only needs to know the tid value of the row until it changes.
+When it is changed in the slave database Marty reflects this change in the history database and saves the new tid value.
+
+Figures \ref{fig:schema-information-example} and \ref{fig:history-data-table-contents} show an example of the values in the \textit{\_ctid} and \textit{data\_ctid} columns in the history database.
