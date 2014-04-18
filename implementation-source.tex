@@ -1,0 +1,48 @@
+\section{Source code}
+The source code for Marty contains two Python scripts that can be run from the command line.
+Those are \textit{history.py}, which a database administrator uses to initialize the history database, and \textit{clone.py} which a user runs to initialize a clone database.
+The rest of the code consists of three Python files which contain classes that the scripts use.
+
+\begin{description}
+  \item[inspector.py]
+    Contains the classes \textit{SlaveInspector} and \textit{HistoryInspector}.
+    The SlaveInspector is used by history.py to gather information about the schemas and tables in the slave database.
+    The HistoryInspector is used by clone.py to read the schema and table information from the history database.
+  \item[populator.py]
+    Contains the classes \textit{HistoryPopulator} and \textit{ClonePopulator}.
+    The HistoryPopulator is used by history.py to insert the information from the SlaveInspector into the history database.
+    The ClonePopulator is used by clone.py to create schemas and tables in the clone database according to the information from the HistoryInspector.
+  \item[dbobjects.py]
+    This file contains a few classes that the inspectors use to supply the populators with data.
+    They include \textit{Schema}, \textit{Table} and \textit{Column} which contain the name and other data about each one of those objects.
+    The Table and Column classes also have methods to create the names of the data tables and its columns.
+\end{description}
+
+The history.py script receives ten arguments:
+
+\texttt{---slave-host} The hostname or IP address of the slave database \\
+\texttt{---slave-port} The port number of the slave database \\
+\texttt{---slave-user} The username for the slave database \\
+\texttt{---slave-password} The password for the slave database \\
+\texttt{---slave-database} The name of the slave database \\
+\texttt{---history-host} The hostname or IP address of the history database \\
+\texttt{---history-port} The port number of the history database \\
+\texttt{---history-user} The username for the history database \\
+\texttt{---history-password} The password for the history database \\
+\texttt{---history-database} The name of the history database
+
+The clone.py script receives the same arguments for the history database and similar arguments for the clone database that should be initialized.
+
+The clone.py script only uses the data in the history database to populate the clone.
+The history.py script receives the WAL replay log from the slave database as standard input.
+It uses a couple of classes to consume and parse the log, \textit{Worker} and \textit{RegExer}.
+The Worker class reads the log and keeps a list of all heap records it encounters.
+When it reads a commit record it creates a new history version in the history database and runs through the heap records, saving the changes to the new history version.
+To parse the log records it uses the RegExer class, which is a wrapper around regular expressions which are used to match and extract data from the replay log.
+See chapter \ref{ch:reading-the-wal} for an explanation of the WAL replay log, heap records and commit records.
+
+All SQL and PL/pgSQL code in Marty is part of the Python scripts.
+Marty is not a large project and the current version contains a little under 1100 lines of code.
+Included in that number is the file that contains the patch to the Postgres source code.
+
+% TODO add a reference to the souce code in the Appendix

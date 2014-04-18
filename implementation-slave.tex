@@ -63,6 +63,7 @@ It is then necessary to add a \textit{recovery.conf} file with a command to fetc
 \end{table}
 
 \subsection{Reading the WAL}
+\label{ch:reading-the-wal}
 The write-ahead log contains all the changes that are applied to the master database.
 They are stored in binary records that can be applied directly to the files in the slave database cluster to repeat the changes on the slave.
 There are a few different kinds of WAL records that store information about different operations on the master.
