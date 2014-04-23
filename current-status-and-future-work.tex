@@ -24,46 +24,47 @@ Optimized queries would reduce the time that queries take to return from the his
 Marty could optimize queries that contain a \textit{WHERE} clause or a \textit{LIMIT} clause, and also queries that aggregate the data in some way, such as queries using the \textit{SUM}, \textit{MIN} or \textit{MAX} functions.
 
 \section{Logical replication}
-Logical log streaming replication is a feature that is being implemented for Postgres and will be part of future versions.
+\textit{Logical log streaming replication} is a feature that is being implemented for Postgres and will be part of future versions.
 It provides the possibility of shipping the change log of one database instead of shipping the changes of the whole database cluster like the write ahead log currently does.
 The receiving, or slave, database reads the contents of the logical log with plugins.
-One plugin is used to apply the changes to the slave database but another one is available that creates SQL statements with the changes.
+One plugin is used to apply the changes to the slave database but another one is available that creates SQL statements with the changes, without applying them.
 Marty could provide one such plugin for the history database that would read the log and create new history versions.
 This would make the slave instance in Marty unnecessary and would simplify the setup and maintenance of Marty.
 
-\section{Data obuscation}
+\section{Data obfuscation}
 Many databases contain sensitive information, or information that should not be used in a development or testing environment.
 Examples of such data are credit card numbers and e-mail addresses.
 Marty could include the possibility to change the values of certain columns in certain tables when it inserts data into the history database.
 This could be in the form of a Python script which would allow for a very flexible way of obfuscating or changing the values when they are read from the slave database.
-This would prevent the sensitive data from ever entering the development or testing environment, thus preventing any accidental use.
+This would prevent the sensitive data from entering the development or testing environment, thus preventing any accidental use.
 
 \section{VCS integration}
-Version control systems (VCS) such as Git and Mercurial allow developers to work on many different features or fixes simultaneously while keeping the changes for each one isolated.
-The developers create \textit{branches} of the source code in the project they are working on where each branch contains the changes for only one feature or fix.
-They can then switch between branches without mixing the changes from one feature with another one.
+Version control systems (VCS) such as Git and Mercurial allow developers to work on many different features or fixes for a program simultaneously while keeping the changes for each feature isolated.
+The developers create \textit{branches} of the source code where each branch contains the changes for only one feature or fix.
+They can then switch between branches without mixing the changes from one feature with the changes from another one.
 
+% TODO add references to git and mercurial?
 It is possible to create \textit{hooks} for these systems that run specific commands when the user executes certain actions.
 Marty could include hooks that would automatically create and initialize a new clone database whenever a developer created a new branch.
 They could also be configured to updated the settings of the project that the developer is working on.
-The developer would then always use the correct database for the active branch without needing to change between them manually.
-This could ease development as the developer would always get a clean development database for each new branch.
+The developer would then always use the correct database for the active branch without needing to change manually from one database to another.
+This could ease development as the developer would always get a new development database for each new branch.
 
 \section{History inspection}
 The history database contains information about when and how certain changes were made on the master database.
 This information could be useful in certain situations where it would be beneficial to inspect the state of the master at a given point in time.
-This is already possible by using the write ahead log, but it is not a practical sollution.
-The WAL must be applied to an old base-backup of the master database and Postgres must be configured to stop at the right moment.
+This is already possible by using the write ahead log, but it is not a very practical solution.
+The WAL must be applied to an old base-backup of the master database and Postgres must be configured to stop the WAL replay at the right moment.
 This can be time consuming as the WAL replay can take considerable time.
 It can also be hard to leap between different points in time when replaying the WAL as there is no way to rewind it.
 
 The information in the history database can be used to quickly inspect the state of the master as it was at a certain point in time.
-It would be a relatively quick opperation to jump backwards or forwards in time and inspect the different states of the database.
+It would be a relatively quick operation to jump backwards or forwards in time and inspect the different states of the database.
 It is already possible to use Marty in such a way with minimal changes.
 The user selects which version to inspect and creates a new clone database that is initialized for that version.
-This includes some manual labor as the use must find the correct version ID and configure Marty to initialize a clone database with that specific history version.
-It is also cumbersome to inspect different versions as the use would need to create a new clone database for each version and then query each one and inspect the results manually.
+This includes some manual labor as the use must find the correct version ID and must configure Marty to initialize a clone database with that specific history version.
+It is also cumbersome to inspect different versions as the user would need to create a new clone database for each version and then query each one and inspect the results manually.
 
 Future versions of Marty could include a tool that would enable a user to quickly scan through and locate the correct history version.
 It would allow the user to inspect the database as it was at that time and even compare two or more versions.
-This would make it possible to debug anomalies in the program that uses the master database even if the anomalies have since stopped because the database has been altered.
+This would make it possible to debug anomalies that were caused by master database even after the database state has been altered and the anomalies have stopped.
