@@ -19,13 +19,13 @@ Marty does not inspect the schema of the master database directly when it create
 Instead it queries another database that is called \textit{history}.
 The history database contains information about the schema of the master database as well as a copy of its data.
 When the clones need to populate their tables they also use this history database as a reference.
-The reason for using another database to store a copy of the schema and data of the master database is discussed in chapter TODO, along with a description of the design of the history database.
+The reason for using another database to store a copy of the schema and data of the master database is discussed in chapter \ref{ch:architecture-history-databases}, along with a description of the design of the history database.
 
 As the name suggests the history database contains not only a copy of the current version of the master but also of previous versions.
 To update the history database with new versions of the master and to keep it in sync with the changes that are made on the master Marty uses a log from the master that is called the \textit{write-ahead log} or \textit{WAL}.
 It does not read this log directly but uses a specially patched instance of Postgres to read the contents of the log.
 This instance is called \textit{slave} and it outputs information that Marty can use to update the history database with all the changes that have been made in the master database.
-The reason for keeping old versions of the master database and the relationship between the master, slave and history databases is described in detail in chapter TODO.
+The reason for keeping old versions of the master database and the relationship between the master, slave and history databases is described in detail in chapter \ref{ch:architecture-history-databases}.
 
 \section{The clone databases}
 \label{ch:architecture-clone-databases}
@@ -59,7 +59,7 @@ The view\_select function uses this table to keep track of which data tables hav
 The table also contains the querystrings that view\_select uses when it fetches the data from the history database.
 See figure \ref{fig:clone-tables} for an example of a table layout in a clone database.
 
-The views, bookkeeping table, data tables and the view\_select function are described in detail in chapter TODO.
+The views, bookkeeping table, data tables and the view\_select function are described in detail in chapter \ref{ch:impementation-clones}.
 
 \begin{figure}[h!]
   \centering
@@ -72,6 +72,7 @@ The views, bookkeeping table, data tables and the view\_select function are desc
 \end{figure}
 
 \section{The history database}
+\label{ch:architecture-history-databases}
 
 \begin{wrapfigure}{r}{0.4\textwidth}
   \vspace{-20pt}
@@ -109,7 +110,7 @@ They are unnecessary as the data table is only used to store the data that has a
 Constraints might also get in the way, e.g. when the tables need to store different versions of the same row that has a unique constraint on some of its columns.
 Another example might be a table that is altered and a not-null constraint is added to one of its columns where null values have been stored in the past.
 Therefore there are no constraints on the data tables in the history database.
-For an example of the schema of a data table see figure \ref{fig:history-data-table}, and for further details see chapter TODO.
+For an example of the schema of a data table see figure \ref{fig:history-data-table}, and for further details see chapter \ref{ch:implementation-history-data}.
 
 \begin{figure}[h!]
   \centering
@@ -147,7 +148,7 @@ The replay log is not enabled in the default build of Postgres so the slave must
 The replay must also be paused after each transaction that has been replayed to give Marty time to read the data from that transaction before the next one is applied.
 Marty includes a patch for the Postgres sorce code to enable this pause.
 The slave therefore runs on a specially patched version of Postgres.
-More information about the slave can be found in chapter TODO.
+More information about the slave can be found in chapter \ref{ch:implementation-slave}.
 
 \section{Advantages and Drawbacks}
 The current architecture of Marty that is described in this chapter was chosen because of its simplicity and because it could be implemented in high level code (PL/pgSQL instead of C) which sped up prototyping and simplified the development of Marty.
@@ -156,4 +157,4 @@ The main drawback is the lack of optimization for queries from the clones to the
 Another issue is the creation of indexes for the tables in the clones; the user can not create indexes for the tables in the clone like she would create them on the master database.
 This is because the tables that the user expects to find in the clone database are actually views and it is not possible to create indexes for views in Postgres.
 
-See chapter TODO for a discussion of the current status of Marty, the limitations of the current version and ideas for future works and improvements.
+See chapter \ref{ch:current-status} for a discussion of the current status of Marty, the limitations of the current version and ideas for future works and improvements.
