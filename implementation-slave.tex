@@ -81,7 +81,7 @@ The log also contains references to the row which was inserted, updated or delet
 \begin{lstlisting}[caption={WAL replay log example},label={lst:wal-replay-log},numbers=left,xleftmargin=2em]
 LOG:  REDO @ 0/800F1A0; LSN 0/800F248: prev 0/800F160; xid 741; len 139: Heap - insert: rel 1663/16384/11829; tid 39/63
 LOG:  REDO @ 0/900390C; LSN 0/9003944: prev 0/9002158; xid 742; len 26: Heap - delete: rel 1663/16384/11829; tid 39/38 KEYS_UPDATED
-LOG:  REDO @ 0/8011D80; LSN 0/8011F0C: prev 0/8011D54; xid 741; len 368: Transaction - commit: 2014-03-06 23:36:33.937958+00; inval msgs: catcache 59 catcache 58 catcache 59 catcache 58 catcache 45 catcache 44 catcache 7 catcache 6 catcache 7 catcache 6 catcache 7 catcache 6 catcache 7 catcache 6 catcache 7 catcache 6 catcache 7 catcache 6 catcache 7 catcache 6 relcache 16394
+LOG:  REDO @ 0/8011D80; LSN 0/8011F0C: prev 0/8011D54; xid 741; len 368: Transaction - commit: 2014-03-06 23:36:33.937958+00
 \end{lstlisting}
 
 Listing \ref{lst:wal-replay-log} has an example of the WAL replay log.
