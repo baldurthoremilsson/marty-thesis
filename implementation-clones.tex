@@ -118,7 +118,7 @@ SELECT * FROM dblink('dbname=mydb', 'SELECT age, name FROM persons') AS p(age in
 
 The dblink query must have an alias part where the names and types of the columns in the result rows are specified.
 This is because the dblink function is declared to return a set of \textit{records}.
-Postgres does not know the format of the records so the user must provide this information with the alias.
+Postgres does not know the format of the records so the user must provide this information with the alias\footnote{http://www.postgresql.org/docs/9.3/static/contrib-dblink-function.html}.
 See listing \ref{lst:table-alias-query} for an example.
 The part after \textit{AS} tells Postgres what to expect in the query results.
 This part is unique to each data table in the clone database.
