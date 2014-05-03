@@ -7,7 +7,7 @@ These tables are the \textit{data tables} of the history database.
 
 The schema of a data table is not identical to the schema of the original table.
 Marty adds three columns for metadata; \textit{data\_ctid}, \textit{start} and \textit{stop}.
-These columns are also present in the schema information tables (where \textit{data\_ctid} is called \textit{\_ctid}) where they serve the same purpose, see chapters \ref{ch:implementation-history-ctid} and \ref{ch:implementation-history-versions} for more information.
+These columns are also present in the schema information tables (where \textit{data\_ctid} is called \textit{\_ctid}) where they serve the same purpose, see Chapters \ref{ch:implementation-history-ctid} and \ref{ch:implementation-history-versions} for more information.
 
 When a column is added to the original table in the slave database Marty also adds it to the corresponding data table.
 If a column is dropped from the original table Marty still keeps the column in the data table.
@@ -20,7 +20,7 @@ This behaviour is similar to the \textit{multiversion concurrency control} (MVCC
 
 Marty does not copy any constraints from the original tables to the data tables.
 The only data that the data tables contain has been copied from the original tables in the slave database.
-This data confirms to the constraints of the original tables and it is therefore unnecessary to replicate the constraints in the data tables.
+This data conforms to the constraints of the original tables and it is therefore not necessary to replicate the constraints in the data tables.
 The constraints would also cause trouble, e.g. when Marty stores updated rows from a table with a unique constraint.
 If the values of the unique columns are not updated but only values in other columns then the data table could not store both the old and the new versions of the rows, as the values in the unique columns would be the same in both rows.
 For these reasons Marty does not copy any constraints from the original tables.
@@ -49,5 +49,5 @@ These two tables are not part of the same history version and thus the names of 
 
 The columns of the data tables use similar names.
 They have the \textit{data\_} prefix and are suffixed with the history version where they were added to the table.
-See figure \ref{fig:history-data-table-2} for an example of the schema of a data table in the history database.
+See Figure \ref{fig:history-data-table-2} for an example of the schema of a data table in the history database.
 Figure \ref{fig:history-data-table-contents} shows an example of the contents of a data table.

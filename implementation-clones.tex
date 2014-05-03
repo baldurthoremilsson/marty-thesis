@@ -17,19 +17,19 @@ It is a standard Postgres database that uses the \textit{PL/pgSQL} and \textit{d
 The user creates a new, empty database and runs the script \textit{clone.py} to initialize it as a clone.
 The script reads the schema information from the history database and initializes the clone accordingly.
 
-Like the history database the clone database must have the same minor version as the master.
+Like the history database the clone database must have the same major version as the master.
 If the master has the version 9.3.3 that means that the clone databases must have a version number that starts with 9.3.
 
 The initialization script creates schemas in the clone database to match those in the master database.
-The tables in the clone are lazy loading.
+The tables in the clone are lazy-loading.
 This means that a table is empty until a user queries it for the first time.
 The clone then fetches its content from the history database.
 This is implemented with a view which the user queries and an accompanying data table which stores the data once it has been fetched from the history.
 
 The data tables live in a schema called \textit{marty}.
-They have the same name as the data tables in the history database (see chapter \ref{ch:implementation-history-data}).
+They have the same name as the data tables in the history database (see Chapter \ref{ch:implementation-history-data}).
 The columns are identical to the columns in the original table in the master database, there are no extra columns and their names are identical to the column names in the original table.
-See figure \ref{fig:clone-tables-2} for an example of a data table.
+See Figure \ref{fig:clone-tables-2} for an example of a data table.
 
 \begin{figure}[h!]
   \centering
@@ -46,7 +46,7 @@ It executes a PL/pgSQL function, \textit{view\_select}, which returns the conten
 The function is created by Marty when the clone is initialized.
 It receives one argument, the name of the view that is being queried, and fetches the data for it from the corresponding data table.
 When the view is queried for the first time the view\_select function fetches the data from the history database and inserts it into the data table before returning the results.
-See listing \ref{lst:view-select} for the source code of the view\_select function.
+See Listing \ref{lst:view-select} for the source code of the view\_select function.
 
 \lstset{
   language=SQL,
@@ -78,7 +78,7 @@ $$ LANGUAGE plpgsql;
 Marty keeps track of which data tables have been populated in the table \textit{bookkeeping}.
 It is created alongside the data tables in the marty schema when the clone database is initialized and is used to store information about the data tables and views.
 It stores which data table keeps the data for which view and whether it has been initialized, as well as information about how to query the history database to fetch the data for each view.
-See table \ref{tbl:bookkeeping} for a list of columns in the bookkeeping table.
+See Table \ref{tbl:bookkeeping} for a list of columns in the bookkeeping table.
 
 \begin{table}[h]
   \centering
@@ -97,7 +97,7 @@ See table \ref{tbl:bookkeeping} for a list of columns in the bookkeeping table.
   \label{tbl:bookkeeping}
 \end{table}
 
-The \textit{cached} column is a boolean which tells the view\_select function whether the data table has been populated with data from the history database (line 6 in listing \ref{lst:view-select}).
+The \textit{cached} column is a boolean which tells the view\_select function whether the data table has been populated with data from the history database (line 6 in Listing \ref{lst:view-select}).
 It defaults to false as all data tables start empty.
 The function uses the \textit{coldef} value when it queries the data table.
 It is a comma separated list of the columns in the data table and is used to construct the select query (line 14).
@@ -108,7 +108,7 @@ It receives two parameters; a connection string and the query to run.
 
 The connection string is generated when the clone database is initialized.
 Marty creates a function, \textit{coninfo}, that returns this string.
-This makes it trivial to update the connection string later in a running clone database if the setup of the history database changes, as only this one-line function needs to be redefined instead of the whole view\_select function.
+This makes it simple to update the connection string later in a running clone database if the setup of the history database changes, as only this one-line function needs to be redefined instead of the whole view\_select function.
 The query that returns the data from the history database is created when Marty initializes the clone and is saved in the \textit{remote\_select\_stmt} column in the bookeeping table.
 
 
@@ -119,7 +119,7 @@ SELECT * FROM dblink('dbname=mydb', 'SELECT age, name FROM persons') AS p(age in
 The dblink query must have an alias part where the names and types of the columns in the result rows are specified.
 This is because the dblink function is declared to return a set of \textit{records}.
 Postgres does not know the format of the records so the user must provide this information with the alias\footnote{http://www.postgresql.org/docs/9.3/static/contrib-dblink-function.html}.
-See listing \ref{lst:table-alias-query} for an example.
+See Listing \ref{lst:table-alias-query} for an example.
 The part after \textit{AS} tells Postgres what to expect in the query results.
 This part is unique to each data table in the clone database.
 It is saved in the \textit{temp\_table\_def} column in the bookkeeping table and is appended to the dblink query in the view\_select function (line 11).

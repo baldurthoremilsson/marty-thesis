@@ -3,9 +3,9 @@
 The history database stores multiple versions of the data from the slave database.
 This is necessary because of the delayed population of the tables in the clone databases.
 From the time when a clone is initialized and until its tables are populated with data the slave database can change, causing inconsistency in the clone.
-Therefor the clone must have access to the data as it was when the user initialized the clone database.
+Therefore the clone must have access to the data as it was when the user initialized the clone database.
 
-When the history database is initialized Marty creates the table \textit{marty\_updates}, see table \ref{tbl:marty-updates} for a list of its columns.
+When the history database is initialized Marty creates the table \textit{marty\_updates}, see Table \ref{tbl:marty-updates} for a list of its columns.
 It stores the ID of each version along with two timestamps, the local time and the master time.
 The local timestamp (in the column \textit{time}) is the time when this version was created in the history database.
 The master time is the time when the transaction that created this version was executed on the master database.
@@ -27,7 +27,7 @@ The ID is a simple counter that starts in 1 and increments by one for each new v
 
 The schema information tables and data tables in the history database have two columns that tell Marty which versions a particular row is part of.
 These columns are \textit{start} and \textit{stop} and they are foreign keys that reference the version ID the the marty\_updates table.
-See tables \ref{tbl:marty-schemas} to \ref{tbl:marty-columns} for a list of columns in the schema information tables and figure \ref{fig:history-data-table-2} for an example of the columns in a data table.
+See Tables \ref{tbl:marty-schemas} to \ref{tbl:marty-columns} for a list of columns in the schema information tables and Figure \ref{fig:history-data-table-2} for an example of the columns in a data table.
 
 When a row in inserted into one of the tables in the history database it is part of the current history version.
 Marty inserts the ID of the current version into the \textit{start} column to reflect this.
@@ -42,7 +42,7 @@ This method is similar to the way Postgres implements \textit{multiversion concu
 The MVCC is used to allow more than one transaction to use the same table at the same time.
 Postgres creates hidden system columns on all tables called \textit{xmin} and \textit{xmax}.
 They store the \textit{transaction ID} of the transactions that created the row and deleted or updated it, respectively.
-This is similar to the version IDs and the way Marty uses the start and stop columns.
+This corresponds to the way Marty uses the start and stop columns.
 Marty does not, however, use the values in the xmin and xmax columns to determine the version numbers for the rows in the history database.
 Instead the WAL replay log is used to inspect when each row is created and when it is deleted.
 

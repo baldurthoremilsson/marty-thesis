@@ -12,11 +12,11 @@ This means that the history database can not save the contents of foreign tables
 
 Other types of database objects that could be supported in future versions are functions and operators, data types and domains, triggers and rewrite rules.
 
-The clone databases lazy load the contents of their tables by using views instead of tables.
+The clone databases lazy-load the contents of their tables by using views instead of tables.
 This prevents many operations that a user might want to perform in the database, such as creating new indexes or altering the tables.
 To create an index it must be added to the data tables in the marty schema, and when the user wants to alter a table she must alter the data table as well as the view.
 Future versions of Marty could include a patched version of Postgres for the clone databases.
-It would include a relation type that looked and behaved like an ordinary table but would lazy load its data from the history database behind the scenes.
+It would include a relation type that looked and behaved like an ordinary table but would lazy-load its data from the history database behind the scenes.
 
 Using a patched version of Postgres opens the possibility for optimizing the queries that are run on the history database.
 Currently when a user queries a table in a clone database it fetches the complete contents of that table from the history database.

@@ -16,16 +16,16 @@ LOG:  REDO @ 0/60080CC; LSN 0/6008198: prev 0/600806C; xid 735; len 37; bkpb0: H
 LOG:  REDO @ 0/600822C; LSN 0/6008264: prev 0/6008204; xid 737; len 26: Heap - delete: rel 1663/16384/16385; tid 0/3 KEYS_UPDATED
 \end{lstlisting}
 
-The values in this column can be used to identify each row in the database.
+The values in the ctid column can be used to identify each row in the database.
 Marty saves this value in the schema information tables and data tables to be able to identify deleted and updated rows.
 The WAL replay log from the slave instance contains the tuple identifier of the rows that are updated or deleted in the WAL records.
 Marty uses the tid to locate the correct row in the schema information tables or data tables in the history database and marks these rows as deleted.
-See listing \ref{lst:wal-update-delete} for an example.
+See Listing \ref{lst:wal-update-delete} for an example.
 In the example the update record in the first line inserts a new row with tid value of (0,2) to replace the old values in row with tid value of (0,1).
 The delete record in the second line deletes a row with tid value of (0,3).
 
 Note that the value of the ctid column can change, e.g. when Postgres \textit{vacuums} the table or when a row is updated.
-Therefor it is not a viable long-term key to identify the row.
+Therefore it is not a viable long-term key to identify the row.
 This does not affect the way Marty uses it because it only needs to know the tid value of the row until it changes.
 When it is changed in the slave database Marty reflects this change in the history database and saves the new tid value.
 

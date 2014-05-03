@@ -14,9 +14,9 @@ The history database contains information about the schema of the master databas
 It contains multiple versions of the schema and data from the master, each transaction that alters the master database creates a history version.
 It is used as a reference when the user creates a new clone database; the schema of the clone is created according to the information in the history database and its data is copied from the history.
 
-The history database is created when the slave instance has been configured correctly.
-It is a standard Postgres database that must have the same minor version as the master database.
-That means that if the master runs on Postgres version 9.3.3 the history version must start with 9.3, see the Postgres documentation for further reference. % TODO add reference?
+The history database is created when the slave instance has been configured.
+It is a standard Postgres database that must have the same major version as the master database.
+That means that if the master runs on Postgres version 9.3.3 the history version must start with 9.3, see the Postgres documentation for further reference\footnote{http://www.postgresql.org/docs/9.3/static/upgrading.html}.
 
 \input{implementation-history-schema}
 \input{implementation-history-data}

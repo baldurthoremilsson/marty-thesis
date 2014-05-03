@@ -1,17 +1,15 @@
 \chapter{Implementation}
 Marty is written in Python and PL/pgSQL with a small patch to the Postgres source code written in C.
 Python and PL/pgSQL are both high-level programming languages and ideal for rapid prototyping.
-The source code cointains two scripts, \textit{clone.py} and \textit{history.py}, which are used to create and populate the clone databases and the history database, respectively.
+The source code for Marty contains two scripts, \textit{clone.py} and \textit{history.py}, which are used to create and populate the clone databases and the history database, respectively.
 The patch to Postgres is necessary for Marty to be able to read the changes from the write-ahead log (WAL) with the slave instance.
-
-Marty is designed to work with Postgres 9.3.3.
-The patch is written for that version and might not work with other versions.
+It is for version 9.3.3 of Postgres and might not work with other versions.
 
 This chapter describes the implementation of Marty.
 It explains which parts of Postgres Marty uses to create the history database and keep track of the changes that are made to the master database.
 It starts by explaining how the slave instance is used and why it is patched.
-It then continues with a description of the history database and its design and ends with a description of the clone databases and how they use the history database to imitate the master.
-% TODO Add source code section
+Next it describes the history database and its design and then continues with a description of the clone databases and how they use the history database.
+The last part of this chapter describes briefly how the source code for Marty is organized.
 
 \input{implementation-slave}
 \input{implementation-history}

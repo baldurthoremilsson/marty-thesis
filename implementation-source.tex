@@ -1,5 +1,6 @@
 \section{Source code}
-The source code for Marty contains two Python scripts that can be run from the command line.
+The source code for the current version of Marty can be found in Appendix \ref{ch:appendix-source-code}.
+It contains two Python scripts that can be run from the command line.
 Those are \textit{history.py}, which a database administrator uses to initialize the history database, and \textit{clone.py} which a user runs to initialize a clone database.
 The rest of the code consists of three Python files which contain classes that the scripts use.
 
@@ -39,10 +40,8 @@ It uses a couple of classes to consume and parse the log, \textit{Worker} and \t
 The Worker class reads the log and keeps a list of all heap records it encounters.
 When it reads a commit record it creates a new history version in the history database and runs through the heap records, saving the changes to the new history version.
 To parse the log records it uses the RegExer class, which is a wrapper around regular expressions which are used to match and extract data from the replay log.
-See chapter \ref{ch:reading-the-wal} for an explanation of the WAL replay log, heap records and commit records.
+See Chapter \ref{ch:reading-the-wal} for an explanation of the WAL replay log, heap records and commit records.
 
 All SQL and PL/pgSQL code in Marty is part of the Python scripts.
 Marty is not a large project and the current version contains a little over 1100 lines of code.
 Included in that number is the file that contains the patch to the Postgres source code.
-
-The source code for the current version of Marty can be found in appendix \ref{ch:appendix-source-code}.
