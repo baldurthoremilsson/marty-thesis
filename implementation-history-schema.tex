@@ -42,7 +42,7 @@ Figure \ref{fig:schema-information-example} shows an example of their contents.
     oid & oid & The ID of the table in the slave database \\
     name & name & The name of the table \\
     schema\_oid & oid & A reference to the schema that this table belongs to \\
-    internal\_name & name & The name of the data table, see \ref{ch:implementation-history-data} \\
+    internal\_name & name & The name of the data table, see chapter \ref{ch:implementation-history-data} \\
     start & integer & First version where this table is present in the database \\
     stop & integer & First version where this table stops being present in the database \\
   \end{tabularx}
@@ -61,7 +61,7 @@ Figure \ref{fig:schema-information-example} shows an example of their contents.
     name & name & The name of the column \\
     number & int2 & The index of this column in the table (is it the first, second, third etc.) \\
     type & name & The type of the column (int, text, boolean etc.) \\
-    internal\_name & name & The name of this column in the data table, see \ref{ch:implementation-history-data} \\
+    internal\_name & name & The name of this column in the data table, see chapter \ref{ch:implementation-history-data} \\
     start & integer & First version where this column is part of the table \\
     stop & integer & First version where this column stops being part of the table \\
   \end{tabularx}
@@ -71,8 +71,8 @@ Figure \ref{fig:schema-information-example} shows an example of their contents.
 
 Postgres uses \textit{system catalogs} to store information about the schema of its databases.
 They are used internally, e.g. when Postgres reads from or writes to tables.
-Things such as which file in the database cluster represents which table and the column names and types of each table are stored in the system catalogs. % TODO Don't use Things such as...
-They are ordinary relations which are stored in a schema called \textit{pg\_catalogs} and can by queried by a user just as any other relation.
+Information such as which file in the database cluster represents which table and the column names and types of each table are stored in the system catalogs.
+They are ordinary tables which are stored in a schema called \textit{pg\_catalogs} and can by queried by a user just as any other table.
 
 Marty reads information from four system catalogs in the slave database:
 
