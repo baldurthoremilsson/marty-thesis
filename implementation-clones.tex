@@ -52,7 +52,8 @@ See listing \ref{lst:view-select} for the source code of the view\_select functi
   language=SQL,
   morekeywords={
     FUNCTION, RETURNS, SETOF, RECORD, DECLARE, BEGIN,
-    IF, RAISE, NOTICE, RETURN, QUERY, LANGUAGE
+    IF, RAISE, NOTICE, RETURN, QUERY, LANGUAGE,
+    int, text
   }
 }
 \begin{lstlisting}[caption={The view\_select function},label={lst:view-select},numbers=left,xleftmargin=2em]
@@ -110,7 +111,15 @@ Marty creates a function, \textit{coninfo}, that returns this string.
 This makes it trivial to update the connection string later in a running clone database if the setup of the history database changes, as only this one-line function needs to be redefined instead of the whole view\_select function.
 The query that returns the data from the history database is created when Marty initializes the clone and is saved in the \textit{remote\_select\_stmt} column in the bookeeping table.
 
+
+\begin{lstlisting}[caption={An example of a SELECT query with a table alias},label={lst:table-alias-query}]
+SELECT * FROM dblink('dbname=mydb', 'SELECT age, name FROM persons') AS p(age int, name text)
+\end{lstlisting}
+
 The dblink query must have an alias part where the names and types of the columns in the result rows are specified.
-An example of this could be \texttt{SELECT * FROM dblink('dbname=mydb', 'SELECT age, name FROM persons') AS p(age int, name text)}.
+This is because the dblink function is declared to return a set of \textit{records}.
+Postgres does not know the format of the records so the user must provide this information with the alias.
+See listing \ref{lst:table-alias-query} for an example.
 The part after \textit{AS} tells Postgres what to expect in the query results.
-This part is saved in the \textit{temp\_table\_def} column in the bookkeeping table and is appended to the dblink query in the view\_select function (line 11).
+This part is unique to each data table in the clone database.
+It is saved in the \textit{temp\_table\_def} column in the bookkeeping table and is appended to the dblink query in the view\_select function (line 11).
