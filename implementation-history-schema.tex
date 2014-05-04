@@ -14,7 +14,10 @@ It starts by creating the \textit{schema information tables} which Marty uses to
 \end{description}
 
 Tables \ref{tbl:marty-schemas} to \ref{tbl:marty-columns} show information about the columns of these tables.
-Figure \ref{fig:schema-information-example} shows an example of their contents.
+Note that each table contains a column called \textit{\_ctid}, see Chapter \ref{ch:implementation-history-ctid} for more information about the value in this column.
+The tables also have two columns called \textit{start} and \textit{stop}.
+These columns define which \textit{history version} each row is part of, see chapter \ref{ch:implementation-history-versions} for further information.
+Figure \ref{fig:schema-information-example} shows an example of the contents of the schema information tables.
 
 \begin{table}[h]
   \centering
@@ -61,6 +64,7 @@ Figure \ref{fig:schema-information-example} shows an example of their contents.
     name & name & The name of the column \\
     number & int2 & The index of this column in the table (is it the first, second, third etc.) \\
     type & name & The type of the column (int, text, boolean etc.) \\
+    length & int4 & The length of the column. Some data types require the user to specify a length, such as character columns, e.g. char(26). Columns without length usually have the value -1 \\
     internal\_name & name & The name of this column in the data table, see Chapter \ref{ch:implementation-history-data} \\
     start & integer & First version where this column is part of the table \\
     stop & integer & First version where this column stops being part of the table \\
@@ -95,7 +99,7 @@ The history.py script creates the schema information tables and then it populate
 This is of course also the schema of the master database so the history database really contains information about the master.
 
 Marty inspects the schema of the slave database before any WAL records have been applied to it.
-It writes the schema information to the history database, which creates the first history version.
+It writes the schema information to the history database, which creates the first history version, see Chapter \ref{ch:implementation-history-versions} for more about history versions.
 Marty then starts the WAL replay in the slave database and reads the replay log.
 
 When a new schema is created the WAL contains an \textit{insert} heap record for the pg\_namespace table.
@@ -115,7 +119,25 @@ Marty sees this in the replay log and creates new history versions with the alte
 \end{figure}
 
 See Figure \ref{fig:schema-information-example} for an example of the contents of the schema information tables.
-In the example the master database has one table, \textit{persons}, with two columns, \textit{age} of type integer and \textit{name} of type text.
-The history part of the examples shows the contents of the schema information tables.
 
-% TODO add reference to CTID and Versions subsections
+In the example the master database has a schema called \textit{myschema}.
+Its object identifier (oid) is 2200.
+The \textit{pg\_namespace} system catalog in the slave database stores information about this schema in a row with the ctid value of (0,5).
+This is reflected in the \textit{marty\_schemas} table in the history database.
+
+The master contains one table, \textit{persons}, which belongs to myschema.
+Information about this table is stored in \textit{marty\_tables}.
+Its oid is 16385 and the slave stores information about this table in a row with ctid value of (0,46) in the \textit{pg\_class} system catalog.
+Its internal name is \textit{data\_myschema\_persons\_1}, see Chapter \ref{ch:implementation-history-data} for information about internal names of tables and columns.
+
+The persons table has two columns, \textit{age} of type \textit{integer} or \textit{int4}, and \textit{name} of type \textit{text}.
+The slave stores information about these columns in the \textit{pg\_attribute} system catalog in rows with ctid values of (39,32) and (39,33).
+The age column is the first column in the table, the name column is the second one.
+This is reflected in the \textit{number} value in \textit{marty\_columns}.
+Columns of type integer and text do not use the length attribute, so Postgres puts -1 there.
+The internal names of the columns are \textit{data\_age\_1} and \textit{data\_name\_1}.
+
+The schema, table and columns are all part of the first history version.
+This is reflected in the columns \textit{start} in the schema information tables.
+They have not yet been altered or dropped and are thus part of every history version after the first one, which is reflected with the NULL value in the \textit{stop} column.
+See Chapter \ref{ch:implementation-history-versions} for information about history versions.
