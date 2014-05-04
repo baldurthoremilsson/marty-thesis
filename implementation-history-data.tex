@@ -39,6 +39,8 @@ Next comes the name of the original table and the name ends with the ID of the h
 This makes it possible for Marty to keep all the data tables in one schema in the history database, even if more than one table from different schemas share the same name in the slave database.
 It also handles name reuse when a table is dropped and another table is created with the same name.
 These two tables are not part of the same history version and thus the names of the data tables are different.
+The columns of the data tables use similar names.
+They have the \textit{data\_} prefix and are suffixed with the history version where they were added to the table.
 
 \begin{figure}[h]
   \centering
@@ -47,7 +49,13 @@ These two tables are not part of the same history version and thus the names of 
   \label{fig:history-data-table-contents}
 \end{figure}
 
-The columns of the data tables use similar names.
-They have the \textit{data\_} prefix and are suffixed with the history version where they were added to the table.
 See Figure \ref{fig:history-data-table-2} for an example of the schema of a data table in the history database.
+The internal name of the data table in the history database is \textit{data\_myschema\_persons\_1}; it belongs to the schema \textit{myschema} and was created in the first history version.
+It has the three metadata columns; \textit{data\_ctid}, \textit{start} and \textit{stop}.
+The \textit{age} and \textit{name} columns of the original table in the master database are called \textit{data\_age\_1} and \textit{data\_name\_1} in the data table.
+
 Figure \ref{fig:history-data-table-contents} shows an example of the contents of a data table.
+The original table in the master database contains one row where age is \texttt{45} and name is \texttt{John Doe}.
+This row has the ctid value of (0,1), which Marty stores in the \textit{data\_ctid} column in the data table.
+It was inserted into the table in history version 2 and deleted again in history version 4.
+This is reflected in the columns \textit{start} and \textit{stop}.
