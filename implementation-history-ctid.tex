@@ -29,4 +29,13 @@ Therefore it is not a viable long-term key to identify the row.
 This does not affect the way Marty uses it because it only needs to know the tid value of the row until it changes.
 When it is changed in the slave database Marty reflects this change in the history database and saves the new tid value.
 
-Figures \ref{fig:schema-information-example} and \ref{fig:history-data-table-contents} show an example of the values in the \textit{\_ctid} and \textit{data\_ctid} columns in the history database.
+Figure \ref{fig:schema-information-example} shows an example of the values in the \textit{\_ctid} column in the schema information tables.
+The table \textit{marty\_schemas} contains information that Marty reads from the \textit{pg\_namespace} system catalog.
+In the example this table contains one row with values from the row with ctid (0,5) in \textit{pg\_namespace}.
+The table \textit{marty\_tables} contains one row with information from the \textit{pg\_class} system catalog.
+It contains values from the row with ctid (0,46) in \textit{pg\_class}.
+The table \textit{marty\_columns} contains two rows with information from the \textit{pg\_attribute} catalog.
+They contain values from the rows with ctids (39,32) and (39,33) in \textit{pg\_attribute}.
+
+Figure \ref{fig:history-data-table-contents} shows an example of a value in the \textit{data\_ctid} column in a data table.
+The data table is called \textit{data\_myschema\_persons\_1} and the row it contains has values from a row in the original table in the master database that has the ctid value (0,1).
