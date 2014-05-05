@@ -1,71 +1,113 @@
 \chapter{Current status and future work}
 \label{ch:current-status}
 The current version of Marty is a proof of concept prototype.
+It is written in Python and PL/pgSQL for version 9.3.3 of Postgres.
 It supports replicating a database with ordinary tables without any default values or constraints.
-It does not support other types of relations or other kinds of database objects other than schemas.
 
-\section{Production use}
-Before Marty is ready for use in a production environment support must be added for at least default values on columns, column and table constraints, sequences and indexes.
-The last two are implemented as relations in Postgres, other types of relations are views and materialized views, TOAST tables, composite types and foreign tables.
-Support for these types would be nice to have, although the data in foreign tables is not a part of the database and is not logged in the write ahead log.
-This means that the history database can not save the contents of foreign tables and support for them would need to be tailored for each setup of Marty.
+Marty replicates a \textit{master} database and the replicas are called \textit{clone} databases.
+They are standard Postgres databases that the user initializes with a Python script that Marty provides.
+The tables in the clone databases are empty until they are queried.
+This reduces the time it takes to create the clone database but with the drawback of a longer query time when the tables in the clones are first queried.
+The lazy-loading of the tables is implemented with views.
+When the user queries a table in a clone database like she would query it in the master database she is actually querying a view.
+When a view is queried for the first time it calls a PL/pgSQL function that fetches the data and caches it on the clone database before it is returned.
+Subsequent queries to the view use the cached data and thus they take less time.
 
+The clone databases do not fetch the data directly from the master database.
+In the time between initializing the clone with the empty tables and fetching their data when the user queries the tables in the database the state of the master database might have changed.
+This could cause inconsistency in the clone database.
+To prevent that it fetches the data from another database, the \textit{history} database.
+It is a standard Postgres database that contains information about the schema and a copy of the data of the master database.
+As the name suggests it contains a history of the changes that have been made on the master database, both to the schema and the data.
+The clone can therefore query the history database for the data as it was at a certain point in time.
+This guarantees the consistency of the data that the clone database fetches and returns to the user.
+
+Marty uses the \textit{write-ahead log} (WAL) from the master database to monitor how it changes.
+This log contains the changes of the master database in binary records that can be directly applied to the cluster files that store the contents of the database.
+This makes it difficult or impossible to read the WAL without having a copy of the database cluster files as a reference.
+Marty uses a dedicated instance of Postgres to read the contents of the WAL.
+This is the \textit{slave} instance which is configured as a \textit{hot-standby} for the master database.
+While it reads the WAL and replays it to the cluster files Marty inspects the changes that the WAL makes and records those changes in the history database.
+
+% TODO more here?
+
+\section{Limitations of the current version}
+Marty can be used to quickly create databases for the development and testing of applications that use Postgres.
+However, the current version is limited to a few core elements in a Postgres database.
+Those are schemas, ordinary tables and the standard data types of the columns.
+Marty does not replicate default values on columns or any column or table constraints, such as foreign keys or UNIQUE constraints.
+
+Before Marty is ready for use in a production environment these limitations must be addressed.
+Support must be added for default values and constraints, along with support for more types of database objects.
+Marty should be able to replicate views as well as ordinary tables.
+Primary keys in tables are often created with the \textit{serial} type which uses a \textit{sequence} to supply the table with values for the primary key.
+Marty must be able to replicate sequences.
+
+Ordinary tables, sequences and views are all examples of \textit{relations}.
+Other relation types are \textit{TOAST tables}, \textit{materialized views}, \textit{composite types} and \textit{foreign tables}\footnote{http://www.postgresql.org/docs/9.3/static/catalog-pg-class.html}.
+It would be nice to add support for these types of relations to make Marty usable in more enviroments.
 Other types of database objects that could be supported in future versions are functions and operators, data types and domains, triggers and rewrite rules.
 
-The clone databases lazy-load the contents of their tables by using views instead of tables.
-This prevents many operations that a user might want to perform in the database, such as creating new indexes or altering the tables.
-To create an index it must be added to the data tables in the marty schema, and when the user wants to alter a table she must alter the data table as well as the view.
-Future versions of Marty could include a patched version of Postgres for the clone databases.
-It would include a relation type that looked and behaved like an ordinary table but would lazy-load its data from the history database behind the scenes.
+Another limitation of the current version is the design of the clone databases.
+They use views to imitate tables that lazy-load their contents from another database.
+This complicates some operations that a user might want to perform in the database, such as creating new indexes or altering the tables.
+The user should be able to execute as many operations as possible in the clone databases in exactly the same way as they are executed in the master database.
+This would likely require the user to run a patched version of Postgres for the clone databases.
 
-Using a patched version of Postgres opens the possibility for optimizing the queries that are run on the history database.
-Currently when a user queries a table in a clone database it fetches the complete contents of that table from the history database.
-This is unncecessary when query returns only a part of the data from the table.
-Optimized queries would reduce the time that queries take to return from the history database, which in turn would make the clone database return results faster to the user.
-Marty could optimize queries that contain a \textit{WHERE} clause or a \textit{LIMIT} clause, and also queries that aggregate the data in some way, such as queries using the \textit{SUM}, \textit{MIN} or \textit{MAX} functions.
+The clone databases do not optimize their queries to the history database in any way.
+When the user queries a table in the clone database it fetches the complete contents of that table from the history, even though the user limits the query results to only a few rows.
+A patched version of Postgres could mitigate this and inspect the queries from the user before it fetches the data form the history database.
+This could speed up the execution of queries, especially for tables that have many thousunds, or even millions of rows.
 
-\section{Logical replication}
+\section{Future work}
+There are many features that can be added to Marty to make it more attractive to developers.
+These include feature that minimize the overhead of using Marty, make it more secure or simplify its setup.
+Below are a few ideas for improvements or additions that could be added to Marty in future versions.
+
+\subsection{Logical replication}
 \textit{Logical log streaming replication} is a feature that is being implemented for Postgres and will be part of future versions.
-It provides the possibility of shipping the change log of one database instead of shipping the changes of the whole database cluster like the write ahead log currently does.
-The receiving, or slave, database reads the contents of the logical log with plugins.
-One plugin is used to apply the changes to the slave database but another one is available that creates SQL statements with the changes, without applying them.
+It provides the possibility of shipping the change log of one database instead of shipping the changes of the whole database cluster, like the write ahead log currently does.
+The receiving database uses plugins to reads the contents of the logical log.
+One plugin is used to apply the changes from the log but another one is available that creates SQL statements from the changes, without applying them.
 Marty could provide one such plugin for the history database that would read the log and create new history versions.
-This would make the slave instance in Marty unnecessary and would simplify the setup and maintenance of Marty.
+This would make the slave instance in Marty unnecessary and would simplify its setup and maintenance.
 
-\section{Data obfuscation}
+\subsection{Data obfuscation}
 Many databases contain sensitive information, or information that should not be used in a development or testing environment.
 Examples of such data are credit card numbers and e-mail addresses.
 Marty could include the possibility to change the values of certain columns in certain tables when it inserts data into the history database.
-This could be in the form of a Python script which would allow for a very flexible way of obfuscating or changing the values when they are read from the slave database.
+This could be in the form of a Python script which would allow for a very flexible way of obfuscating or changing the values before they are inserted into the history.
 This would prevent the sensitive data from entering the development or testing environment, thus preventing any accidental use.
 
-\section{VCS integration}
-Version control systems (VCS) such as Git and Mercurial allow developers to work on many different features or fixes for a program simultaneously while keeping the changes for each feature isolated.
+\subsection{VCS integration}
+Version control systems (VCS) such as Git\footnote{http://git-scm.com} and Mercurial\footnote{http://mercurial.selenic.com} allow developers to work on many different features or fixes for a program simultaneously while keeping the changes for each feature isolated.
 The developers create \textit{branches} of the source code where each branch contains the changes for only one feature or fix.
-They can then switch between branches without mixing the changes from one feature with the changes from another one.
+They can then switch between branches without polluting one branch with the changes from another one.
 
-% TODO add references to git and mercurial?
 It is possible to create \textit{hooks} for these systems that run specific commands when the user executes certain actions.
 Marty could include hooks that would automatically create and initialize a new clone database whenever a developer created a new branch.
-They could also be configured to updated the settings of the project that the developer is working on.
+They could also be configured to update the settings of the project that the developer is working on.
 The developer would then always use the correct database for the active branch without needing to change manually from one database to another.
 This could ease development as the developer would always get a new development database for each new branch.
 
-\section{History inspection}
-The history database contains information about when and how certain changes were made on the master database.
-This information could be useful in certain situations where it would be beneficial to inspect the state of the master at a given point in time.
-This is already possible by using the write ahead log, but it is not a very practical solution.
+\subsection{Time travel}
+Time travel is a feature that was once a part of Postgres\footnote{http://www.postgresql.org/docs/6.3/static/c0503.htm}.
+It allowed users to query the contents of the database as it was at a certain point in time in the past.
+It was removed from Postgres in version 6.2 due to performance impact and how much extra storage was needed to support this feature.
+
+It can, however, be useful in some situations to be able to query the database for historical versions of its data.
+This is possible in the current version of Postgres by using the write-ahead log, but it is not a very practical solution.
 The WAL must be applied to an old base-backup of the master database and Postgres must be configured to stop the WAL replay at the right moment.
 This can be time consuming as the WAL replay can take considerable time.
 It can also be hard to leap between different points in time when replaying the WAL as there is no way to rewind it.
 
-The information in the history database can be used to quickly inspect the state of the master as it was at a certain point in time.
+The information in the history database can instead be used for this task.
 It would be a relatively quick operation to jump backwards or forwards in time and inspect the different states of the database.
 It is already possible to use Marty in such a way with minimal changes.
 The user selects which version to inspect and creates a new clone database that is initialized for that version.
-This includes some manual labor as the use must find the correct version ID and must configure Marty to initialize a clone database with that specific history version.
-It is also cumbersome to inspect different versions as the user would need to create a new clone database for each version and then query each one and inspect the results manually.
+This includes some manual labor as the user must first find the correct history version and then configure Marty to initialize a clone database with that specific version ID.
+It is also cumbersome to inspect different versions as the user would need to create a new clone database for each version and then query all of them and inspect the results manually.
 
-Future versions of Marty could include a tool that would enable a user to quickly scan through and locate the correct history version.
-It would allow the user to inspect the database as it was at that time and even compare two or more versions.
-This would make it possible to debug anomalies that were caused by master database even after the database state has been altered and the anomalies have stopped.
+Future versions of Marty could include a tool that would enable a user to quickly scan the history database and locate the correct history version.
+The user could inspect the database as it was at that time and even compare two or more versions.
+This would make it possible to debug anomalies that were caused by erronous data in the master database even after the database state has been altered and the anomalies have stopped.
