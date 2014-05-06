@@ -11,7 +11,14 @@ The goal of Marty is to offer a convenient and relatively efficient way to run t
 This is achieved by creating a testing database with empty tables that are populated  when they are first queried.
 This saves time as only the tables which are used in the tests are populated and no time is spent copying the data for the other tables, which remain empty.
 The data is not copied directly from the production server but from another instance of Postgres that stores a copy of the production data.
-This ensures the consistency of the data in the cloned databases and also to minimize the load on the production database.
-A byproduct of this architecture is the possibility to inspect the state of the production database as it was at a certain point in time.
+This ensures the consistency of the data in the cloned databases and it also minimizes the load on the production database.
 
-% TODO rewrite this section when the thesis is complete: The rest of this thesis is organized as follows: chapter 2 contains details about the history of Postgres and its internals that are relevant to Marty. In chapter 3 the design of Marty is described along with reasoning for why this design was chosen and some details about the implementation of Marty. The fourth and final chapter contains conclusions and future work.
+The architecture of Marty enables users to inspect the state of the production database as it was at a certain point in time in the past.
+This is similar to \textit{time travel} which was once a part of Postgres but was removed due to performance and storage space issues.
+This can be beneficial in situations where the state of the database caused anomalies or bugs in the application, bugs which have since stopped because the state of the database has changed.
+The user could then run the application with data from different points in time to debug it.
+
+\input{goals-and-purpose-of-marty}
+\input{similar-solutions}
+\input{postgres}
+\input{thesis-overview}

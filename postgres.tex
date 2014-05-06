@@ -1,0 +1,49 @@
+\section{Postgres}
+Postgres is an SQL based DBMS that originated at the University of California, Berkely in the 1980's.
+It was based on another DBMS, Ingres, and was released as a free and open source software in 1995.
+It is developed by a global community under the name PostgreSQL Global Development Group, with a core team consisting of a half a dozen members and a large number of other contributors.
+It is written in C and runs on multiple platforms.
+
+Postgres is very mature and has a large number of features, including conformance with a large part of the SQL standard and a support for extension modules.
+Many modules have been created to add new data types, offer new scripting languages for stored procedures and add functionality for specific types of data, such as geographical information.
+It has a very extensive documentation and an active community that offers support for users through mailing lists and IRC channels.
+
+Many companies offer commercial support and products based on Postgres with many more using it as a part of their internal systems.
+It is used by government organizations and universities and many free and open source projects.
+
+\subsection{Technical information}
+There are a few implementation details that are used to explain the architecture and implementation of Marty.
+Postgres also uses some concepts to describe objects or ideas that are different from what these concepts are often used to describe.
+
+A \textit{database cluster} in Postgres is a directory in the file system of the server that runs the Postgres instance.
+This directory contains files and subfolders that store all contents of every database that runs on this instance of Postgres.
+The files contain binary data that is generally not readable by programs other than the Postgres DBMS.
+
+A \textit{relation} is a database object that stores some data.
+One example of a relation is an ordinary table that is created in a Postgres database.
+Its contents are stored in the database cluster directory in a \textit{relation file}.
+This file consists of \textit{blocks} of data, each of which contains one or many \textit{tuples} that store the values of the relation.
+Other types of relations are e.g. views, sequences and foreign tables.
+
+Postgres keeps a log of all changes that are made to the relation files, and other files and directories in the database cluster, in a so-called \textit{write-ahead log} or WAL.
+The WAL contains the binary records that Postgres inserts into the files in the cluster.
+It is used for recovery after a server crash and can also be used to replicate the database in another instance of Postgres.
+Marty uses the WAL to inspect the changes that have been made to the master database which the clone databases replicate.
+
+Postgres is a \textit{transactional} database.
+This means that every operation that a user executes in the database is wrapped in a transaction.
+Inside a transaction the state of the database is unaffected by the changes that are made in other transactions, even if they run concurrently.
+This is important to make it possible for users to query the database even though another user is updating the same tables at the same time.
+Postgres implements this by using \textit{multiversion concurrency control} (MVCC).
+It enables a database to contain multiple versions of the same data at the same time to ensure that the data in the tables in each transaction is correct and consistent.
+
+The details of how Postgres implements the MVCC are complex, but the most relevant part for the description of Marty are the \textit{xmin} and \textit{xmax} columns.
+These are hidden system columns which Postgres adds to every table.
+They are used to define which transactions can see which rows in the table.
+Every transaction that runs on the server has a \textit{transaction ID}.
+The ID of the transaction that inserts a row into a table is recorded in the xmin column.
+When a row is deleted the ID of the transaction that deleted it is recorded in the xmax column, until then it contains NULL.
+A transaction that updates the values of a row actually inserts a new row with the updated values and marks the old row as deleted.
+A row is part of a transaction if the equation \textit{xmin ≤ transaction ID < xmax} holds.
+
+Marty uses a similar technique when it stores multiple versions of the data in the master database.
