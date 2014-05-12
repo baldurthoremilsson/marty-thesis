@@ -82,6 +82,19 @@
 
 \renewcommand*{\lstlistlistingname}{List of Listings}
 
+% Fix margin on frontpage
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+
+
 % Function to add footer to frontpage
 \newcommand\BackgroundPic{
 \put(0,0){
@@ -106,18 +119,20 @@ University of Iceland\\
 \thispagestyle{empty}
 \AddToShipoutPicture*{\BackgroundPic}
 %
+\begin{changemargin}{0.55cm}{0cm}
 \begin{center}
 \vspace*{1cm}
 \includegraphics[width=43.6mm]{ui_1_cmyk}\\
 \vspace*{3.0cm}
 \huge \sffamily \bfseries \thesistitle
 
-\vspace*{5.5cm}
+\vspace*{5cm}
 \normalfont \Large \sffamily \thesisauthor
 \AddToShipoutPicture*{\BackgroundPic}
 \vfill
 
 \end{center}
+\end{changemargin}
 
 \newpage 
 \thispagestyle{empty} \mbox{}
