@@ -3,13 +3,13 @@ The goal of the development of Marty is to create an application that enables it
 The original idea was that software developers and testers would be able to clone a database that is used in production and stores large amounts of data that would normally take a considerable time to copy to another server.
 Marty will speed up development and testing by reducing the time it takes to clone the production database and also uses techniques that reduce or prevent any negative impact that the cloning would have on the performance of the production database. 
 
-Although the initial idea was for production databases to be cloned there is nothing that prevents Marty to be used for other kinds of databases, such as databases that are dedicated to storing test datasets that never enter production, as long as those databases fulfill the requirements for Marty.
+Although the initial idea was for production databases to be cloned there is nothing that prevents Marty from being used for other kinds of databases, such as databases that are dedicated to storing test datasets that never enter production, as long as those databases fulfill the requirements for Marty.
 
-The emphasis in the design and development of Marty is to minimize the time from when the cloning of a database is initialized and until the newly created clone can be used for testing.
+The emphasis in the design and development of Marty is to minimize the time from when the cloning of a database is initialized until the newly created clone can be used for testing.
 The performance of the newly created database has not been a high priority as it is not intended to be used in a performance critical environment.
 Thus Marty is not a solution that should be used to create clones of a database that are to be used for load balancing or failover or serve any other role in the production environment of an application.
 
-Marty is supposed to be used in an environment where a one or a few databases need to be cloned regularly.
+Marty is supposed to be used in an environment where a single or a few databases need to be cloned regularly.
 The architecture that was chosen for Marty requires a system administrator to set up and configure Marty for the environment where it is used.
 This involves running a dedicated Postgres instance that is used as a reference when the clones are created and also configuring the production server to work with this dedicated instance in a certain way, which might require the production server to be restarted.
 It should therefore be clear that Marty is not suited for cloning a database that only needs to be cloned for a limited number of times.

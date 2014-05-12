@@ -5,7 +5,7 @@ It is written in Python and PL/pgSQL for version 9.3.3 of Postgres.
 It supports replicating a database with ordinary tables without any default values or constraints.
 
 Marty replicates a \textit{master} database and the replicas are called \textit{clone} databases.
-They are standard Postgres databases that the user initializes with a Python script that Marty provides.
+They are standard Postgres databases that the user initializes with a Python script provided by Marty.
 The tables in the clone databases are empty until they are queried.
 This reduces the time it takes to create the clone database but with the drawback of a longer query time when the tables in the clones are first queried.
 The lazy-loading of the tables is implemented with views.
@@ -28,8 +28,6 @@ This makes it difficult or impossible to read the WAL without having a copy of t
 Marty uses a dedicated instance of Postgres to read the contents of the WAL.
 This is the \textit{slave} instance which is configured as a \textit{hot-standby} for the master database.
 While it reads the WAL and replays it to the cluster files Marty inspects the changes that the WAL makes and records those changes in the history database.
-
-% TODO more here?
 
 \section{Limitations of the current version}
 Marty can be used to quickly create databases for the development and testing of applications that use Postgres.

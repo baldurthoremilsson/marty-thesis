@@ -2,14 +2,16 @@
 The development of Marty was started in part to solve a problem that did not have any solutions available.
 When a user wanted to replicate a Postgres database she needed to copy the whole database.
 Tools like \textit{pg\_dump} exists to aid with database replication but any optimizations had to be created manually for each setup.
-If the user wanted to keep some tables empty or skip them completely she needed to create her own solution, such as a script, that implemented that behaviour.
+If the user wanted some tables to be empty or not included in the replication she needed to create her own solution, such as a script, that implemented that behaviour.
 Postgres does not support lazy-loading of data natively like the clone databases in Marty require.
 
 Heroku, a web hosting company, offers Postgres database hosting\footnote{https://www.heroku.com/postgres}.
 It has implemented a feature called \textit{forking} which is based on the same idea as Marty but implemented differently.
 The documentation for forking includes:
 
-\textit{Preparing a fork can take anywhere from several minutes to several hours, depending on the size of your dataset\footnote{https://devcenter.heroku.com/articles/heroku-postgres-fork}.}
+\begin{quote}
+\textit{Preparing a fork can take anywhere from several minutes to several hours, depending on the size of your dataset.\footnote{https://devcenter.heroku.com/articles/heroku-postgres-fork}}
+\end{quote}
 
 The fork is a complete replica that contains all the tables and database objects of the original database as well as all of its data.
 This is unlike the way that Marty creates its clone databases; their tables start empty and are not populated with data until they are queried.
@@ -24,5 +26,5 @@ This makes it a better choice in the situation where developers and testers need
 Software development includes testing in various stages of the development.
 Various methods are used to test the software, such as automated unit tests and integration tests and manual testing that is performed by the developer or a dedicated tester.
 It should be possible to use Marty for all stages of software testing.
-The creation and initialization of the clone databases should be quick enough to make it feasible to create a new one for each feature that is being developed or tested.
-This includes creating a new clone database for each unit test and integration test that is executed, even if there are hundreds of them and they are executed multiple times every day.
+The creation and initialization of the clone databases should be fast enough to make it feasible to create a new clone for each feature that is being developed or tested.
+This includes creating a new clone database for each unit test and integration test that is executed, even if there are hundreds of them and they are executed multiple times per day.
