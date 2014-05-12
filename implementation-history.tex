@@ -1,18 +1,18 @@
 \section{The history database}
 
-\begin{wrapfigure}{r}{0.5\textwidth}
+The history database contains information about the schema of the master database and a copy of its data.
+It contains multiple versions of the schema and data from the master, each transaction that alters the master database creates a history version.
+It is used as a reference when the user creates a new clone database; the schema of the clone is created according to the information in the history database and its data is copied from the history.
+
+\begin{wrapfigure}{r}{0.55\textwidth}
   \vspace{-20pt}
   \begin{center}
-    \includegraphics[width=0.48\textwidth]{img/architecture-history}
+    \includegraphics[width=0.53\textwidth]{img/architecture-history}
   \end{center}
   \vspace{-20pt}
   \caption{The history part of the architecture}
   \vspace{-10pt}
 \end{wrapfigure}
-
-The history database contains information about the schema of the master database and a copy of its data.
-It contains multiple versions of the schema and data from the master, each transaction that alters the master database creates a history version.
-It is used as a reference when the user creates a new clone database; the schema of the clone is created according to the information in the history database and its data is copied from the history.
 
 The history database is created when the slave instance has been configured.
 It is a standard Postgres database that must have the same major version as the master database.
