@@ -109,7 +109,7 @@ It receives two parameters; a connection string and the query to run.
 The connection string is generated when the clone database is initialized.
 Marty creates a function, \textit{coninfo}, that returns this string.
 This makes it simple to update the connection string later in a running clone database if the setup of the history database changes, as only this one-line function needs to be redefined instead of the whole view\_select function.
-The query that returns the data from the history database is created when Marty initializes the clone and is saved in the \textit{remote\_select\_stmt} column in the bookeeping table.
+The query that returns the data from the history database is created when Marty initializes the clone and is saved in the \textit{remote\_select\_stmt} column in the bookkeeping table.
 
 
 \begin{lstlisting}[caption={An example of a SELECT query with a table alias},label={lst:table-alias-query}]

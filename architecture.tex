@@ -7,7 +7,7 @@ Marty consists of a few parts that serve different purposes, see Figure \ref{fig
 Developers and testers that use Marty in their work create database \textit{clones}.
 These databases are clones of the \textit{master} database, which can be a database that is used in a production environment.
 When the clones are created they are initialized with a copy of all the tables in the master, but the tables remain empty until they are queried by a user or an application.
-The design of the clone databases is discuessed in Chapter \ref{ch:architecture-clone-databases}.
+The design of the clone databases is discussed in Chapter \ref{ch:architecture-clone-databases}.
 
 \begin{figure}[h!]
   \centering
@@ -16,7 +16,7 @@ The design of the clone databases is discuessed in Chapter \ref{ch:architecture-
   \label{fig:architecture-overview}
 \end{figure}
 
-Marty does not inspect the schema of the master database directly when it creates the tabes in the clone databases.
+Marty does not inspect the schema of the master database directly when it creates the tables in the clone databases.
 Instead it queries another database that is called \textit{history}.
 The history database contains information about the schema of the master database as well as a copy of its data.
 When the clones need to populate their tables they also use this history database as a reference.
@@ -50,14 +50,14 @@ To create a clone the user creates a new, empty database.
 She then initializes it with Marty.
 After the clone has been initialized it contains all the schemas that are found in the master database and a copy of all the tables from each schema.
 The tables remain empty until they are first queried which saves time in the initialization as the user does not have to wait for Marty to finish copying all the data in the tables before she can start querying the clone.
-This behaviour is implemented by creating views instead of tables in the clone.
+This behavior is implemented by creating views instead of tables in the clone.
 The views look like the tables that the user expects to find and when they are queried they call a PL/pgSQL function, \textit{view\_select}, that returns the appropriate data.
 This function looks for the data in the actual data tables, which Marty creates in the clone, and if these tables are empty the function populates them with data from the history database before returning their contents.
 
 The data tables are created in a special schema called \textit{marty} which is created in the clone database.
 It contains the data tables as well as another table called bookkeeping.
 The view\_select function uses this table to keep track of which data tables have been populated and which ones are still unpopulated.
-The table also contains the querystrings that view\_select uses when it fetches the data from the history database.
+The table also contains the query strings that view\_select uses when it fetches the data from the history database.
 See Figure \ref{fig:clone-tables} for an example of a table layout in a clone database.
 
 The views, bookkeeping table, data tables and the view\_select function are described in detail in Chapter \ref{ch:impementation-clones}.
@@ -147,7 +147,7 @@ As the WAL is replayed the slave logs information about the operations that it r
 
 The replay log is not enabled in the default build of Postgres so the slave must be compiled with a special flag to enable it.
 The replay must also be paused after each transaction that has been replayed to give Marty time to read the data from that transaction before the next one is applied.
-Marty includes a patch for the Postgres sorce code to enable this pause.
+Marty includes a patch for the Postgres source code to enable this pause.
 The slave therefore runs on a specially patched version of Postgres.
 More information about the slave can be found in Chapter \ref{ch:implementation-slave}.
 

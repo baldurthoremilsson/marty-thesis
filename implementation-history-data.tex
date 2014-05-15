@@ -16,7 +16,7 @@ This is necessary because Marty keeps old versions of the data in the table and 
 When a row is deleted from the original table Marty marks it as deleted in the data table.
 The row is still kept in the data table as part of an old history version because the data must still be accessible.
 When a row is updated in the original table Marty inserts a new row into the data table with the updated values and marks the old row as deleted.
-This behaviour is similar to the \textit{multiversion concurrency control} (MVCC) that Postgres uses to allow more than one transaction to use the same table at the same time.
+This behavior is similar to the \textit{multiversion concurrency control} (MVCC) that Postgres uses to allow more than one transaction to use the same table at the same time.
 
 Marty does not copy any constraints from the original tables to the data tables.
 The only data that the data tables contain has been copied from the original tables in the slave database.

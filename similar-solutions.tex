@@ -2,7 +2,7 @@
 The development of Marty was started in part to solve a problem that did not have any solutions available.
 When a user wanted to replicate a Postgres database she needed to copy the whole database.
 Tools like \textit{pg\_dump} exists to aid with database replication but any optimizations had to be created manually for each setup.
-If the user wanted some tables to be empty or not included in the replication she needed to create her own solution, such as a script, that implemented that behaviour.
+If the user wanted some tables to be empty or not included in the replication she needed to create her own solution, such as a script, that implemented that behavior.
 Postgres does not support lazy-loading of data natively like the clone databases in Marty require.
 
 Heroku, a web hosting company, offers Postgres database hosting\footnote{https://www.heroku.com/postgres}.

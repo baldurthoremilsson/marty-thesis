@@ -43,7 +43,7 @@ Marty must be able to replicate sequences.
 
 Ordinary tables, sequences and views are all examples of \textit{relations}.
 Other relation types are \textit{TOAST tables}, \textit{materialized views}, \textit{composite types} and \textit{foreign tables}\footnote{http://www.postgresql.org/docs/9.3/static/catalog-pg-class.html}.
-It would be nice to add support for these types of relations to make Marty usable in more enviroments.
+It would be nice to add support for these types of relations to make Marty usable in more environments.
 Other types of database objects that could be supported in future versions are functions and operators, data types and domains, triggers and rewrite rules.
 
 Another limitation of the current version is the design of the clone databases.
@@ -55,7 +55,7 @@ This would likely require the user to run a patched version of Postgres for the 
 The clone databases do not optimize their queries to the history database in any way.
 When the user queries a table in the clone database it fetches the complete contents of that table from the history, even though the user limits the query results to only a few rows.
 A patched version of Postgres could mitigate this and inspect the queries from the user before it fetches the data form the history database.
-This could speed up the execution of queries, especially for tables that have many thousunds, or even millions of rows.
+This could speed up the execution of queries, especially for tables that have many thousands, or even millions of rows.
 
 \section{Future work}
 There are many features that can be added to Marty to make it more attractive to developers.
@@ -108,4 +108,4 @@ It is also cumbersome to inspect different versions as the user would need to cr
 
 Future versions of Marty could include a tool that would enable a user to quickly scan the history database and locate the correct history version.
 The user could inspect the database as it was at that time and even compare two or more versions.
-This would make it possible to debug anomalies that were caused by erronous data in the master database even after the database state has been altered and the anomalies have stopped.
+This would make it possible to debug anomalies that were caused by erroneous data in the master database even after the database state has been altered and the anomalies have stopped.
